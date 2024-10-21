@@ -1,0 +1,62 @@
+<div class="p-4">
+  <!-- Botón para abrir el modal con el ícono de "+" -->
+  <button (click)="openModal()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 fixed bottom-4 right-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+  </button>
+
+  <!-- Modal para agregar jugadores -->
+  <div *ngIf="showModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md relative">
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <!-- Formulario dentro del modal -->
+      <form (ngSubmit)="addPlayer()" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Agregar Jugador</h2>
+        <input type="text" [(ngModel)]="newPlayer.firstName" name="firstName" placeholder="Nombre" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="text" [(ngModel)]="newPlayer.lastName" name="lastName" placeholder="Apellidos" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="text" [(ngModel)]="newPlayer.position" name="position" placeholder="Posición" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="number" [(ngModel)]="newPlayer.dorsal" name="dorsal" placeholder="Dorsal" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="file" (change)="onImageSelected($event)" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        <button type="submit" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          Agregar Jugador
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de jugadores en tarjetas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-8">
+    <div *ngFor="let player of playersSorted" class="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 relative">
+      <!-- Contenedor centrado para la imagen -->
+      <div class="relative z-10 flex justify-center -mt-16">
+        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+          <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }} {{ player.lastName }}" class="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <!-- Información del jugador -->
+      <div class="mt-6 text-center">
+        <h3 class="text-xl font-semibold text-gray-900">{{ player.firstName }} {{ player.lastName }}</h3>
+        <p class="text-gray-500">Posición: {{ player.position }}</p>
+        <p class="text-gray-500">Dorsal: {{ player.dorsal }}</p> <!-- Nuevo campo para el dorsal -->
+      </div>
+
+       <!-- Mostrar asistencia del jugador -->
+      <div class="mt-4 text-center">
+        <p class="text-blue-600">Asistencia: {{ getPlayerAttendance(player) }} / {{ getTotalTrainings() }}</p> <!-- Mostrar la asistencia sobre el total -->
+      </div>
+
+      <!-- Botón de eliminar con ícono de papelera -->
+      <button (click)="removePlayer(player.id)" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 focus:outline-none transition-colors duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 01-16.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-4 0h10" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
