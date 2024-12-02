@@ -45,9 +45,8 @@
   </div>
 
   <!-- Lista de jugadores en tarjetas -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 mt-8">
     <div *ngFor="let player of playersSorted" class="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 relative">
-
       <!-- Pill con la posición del jugador -->
       <div class="absolute top-5 left-4">
         <button [ngClass]="{'bg-red-200 border-red-300': player.position == 'Cadete', 'bg-blue-200 border-blue-400': player.position != 'Cadete'}"
@@ -55,7 +54,6 @@
       </div>
 
       <div class="relative z-10 flex justify-center -mt-12">
-
           <!-- Imagen del jugador -->
         <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
           <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }}" class="w-full h-full object-cover" />
@@ -63,7 +61,6 @@
       </div>
 
       <div class="mt-2 text-center">
-
         <!-- Nombre del jugador -->
         <h3 class="text-xl font-semibold text-gray-900">{{ player.firstName }} <span *ngIf="player.position != 'Cadete'">#{{ player.dorsal }}</span></h3>
 
