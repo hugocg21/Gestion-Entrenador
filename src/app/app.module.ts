@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AssistanceComponent } from './components/assistance/assistance.component';
-import { TrainingCalendarComponent } from './components/training-calendar/training-calendar.component';
 import { FormsModule } from '@angular/forms';
 import { PlayersListComponent } from './components/players-list/players-list.component';
+import { TrainingsListComponent } from './components/trainings-list/trainings-list.component';
+import { GamesListComponent } from './components/games-list/games-list.component';
 
 @NgModule({
   declarations: [
@@ -16,8 +17,9 @@ import { PlayersListComponent } from './components/players-list/players-list.com
     HeaderComponent,
     DashboardComponent,
     AssistanceComponent,
-    TrainingCalendarComponent,
-    PlayersListComponent
+    PlayersListComponent,
+    TrainingsListComponent,
+    GamesListComponent
   ],
   imports: [
     BrowserModule,

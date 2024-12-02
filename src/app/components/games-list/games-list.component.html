@@ -1,0 +1,61 @@
+<div class="p-4">
+  <!-- Botón para abrir el modal con el ícono de "+" -->
+  <button (click)="openModal()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 fixed bottom-4 right-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+  </button>
+
+  <!-- Modal para agregar jugadores -->
+  <div *ngIf="showModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md relative">
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <!-- Formulario dentro del modal -->
+      <form (ngSubmit)="addGame()" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Agregar Partido</h2>
+        <input type="date" [(ngModel)]="newGame.date" name="firstName" placeholder="Día" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="time" [(ngModel)]="newGame.time" name="lastName" placeholder="Hora" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="text" [(ngModel)]="newGame.location" name="position" placeholder="Lugar" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+        <input type="text" [(ngModel)]="newGame.opponent" name="dorsal" placeholder="Rival" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+
+        <!-- Convocatoria de jugadores -->
+        <h3 class="text-xl font-semibold mt-4 mb-2">Convocar Jugadores</h3>
+        <div class="max-h-60 overflow-y-auto border rounded p-2">
+          <div *ngFor="let player of players" class="flex items-center mb-2">
+            <input type="checkbox" [checked]="newGame.selectedPlayers?.includes(player.id)" (change)="togglePlayerSelection(player.id)">
+            <label class="ml-2">{{ player.firstName }} {{ player.lastName }}</label>
+          </div>
+        </div>
+
+        <button type="submit" class="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">Agregar Partido</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-8">
+    <div *ngFor="let game of gamesSorted" class="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 relative">
+
+    <div class="mt-2 text-center">
+
+      <!-- Nombre del jugador -->
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ game.opponent }}</h3>
+
+      <h1 class="mb-2">{{ game.location }}</h1>
+
+      <!-- Asistencia a los entrenamientos del jugador asistidos/totales -->
+      <p class="text-blue-600">{{ formatDate(game.date) }} || {{ game.time }}</p>
+    </div>
+
+    <!-- Botón en forma de papelera para eliminar al jugador -->
+    <button (click)="removeGame(game.id)" class="absolute top-5 right-4 text-red-600 focus:outline-none transition-colors duration-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 01-16.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-4 0h10" />
+      </svg>
+    </button>
+    </div>
+  </div>
+</div>

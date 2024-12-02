@@ -1,0 +1,37 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <button (click)="previousMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+      Anterior
+    </button>
+    <h2 class="text-2xl font-bold text-white">Mes: {{ currentMonthName }}</h2>
+    <button (click)="nextMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+      Siguiente
+    </button>
+  </div>
+
+  <div class="space-y-8">
+    <div *ngFor="let week of weeks" class="bg-white p-6 rounded-lg shadow-lg">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Semana {{ week.number }}</h3>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div *ngFor="let day of week.trainingDays"
+          class="p-4 rounded-lg shadow-md text-center"
+          [ngClass]="{
+            'bg-green-200': isPast(day),
+            'bg-yellow-200': isToday(day),
+            'bg-blue-100': isFuture(day)
+          }">
+
+          <div class="text-xl font-bold text-gray-700">{{ getDayName(day) }}</div>
+          <div class="text-sm text-gray-500">{{ day | date: 'dd/MM' }}</div>
+
+          <div class="mt-4 text-left">
+            <p class="font-semibold">Lugar: {{ getTrainingInfo(day)?.location }}</p>
+            <p>Hora: {{ getTrainingInfo(day)?.time }}</p>
+            <p>Asistencia: {{ getAttendanceCount(formatDate(day)) }} / {{ players.length }} jugadores</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
