@@ -10,6 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { PlayersListComponent } from './components/players-list/players-list.component';
 import { TrainingsListComponent } from './components/trainings-list/trainings-list.component';
 import { GamesListComponent } from './components/games-list/games-list.component';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import { GamesListComponent } from './components/games-list/games-list.component
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
 
@@ -7,33 +7,31 @@ import { PlayerService } from '../../services/player.service';
   templateUrl: './assistance.component.html',
   styleUrls: ['./assistance.component.css']
 })
-export class AssistanceComponent {
-  players: Player[] = []; //Lista de jugadores con objetos Player
-  currentMonth: number = new Date().getMonth(); //Variable numérica que guarda el número del mes actual
-  currentYear: number = new Date().getFullYear(); //Variable numérica que guarda el número del año actual
+export class AssistanceComponent implements OnInit {
+  players: Player[] = []; // Lista de jugadores con objetos Player
+  currentMonth: number = new Date().getMonth(); // Variable numérica que guarda el número del mes actual
+  currentYear: number = new Date().getFullYear(); // Variable numérica que guarda el número del año actual
   months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  trainingDays: { date: Date }[] = []; //Lista que almacena los días de entrenamiento
+  trainingDays: { date: Date }[] = []; // Lista que almacena los días de entrenamiento
 
-  //Constructor que crea un objeto del PlayerService
   constructor(private playerService: PlayerService) {}
 
   ngOnInit() {
-    this.generateTrainingDays();
-    this.players = this.playerService.getPlayers();
-
-    const storedTrainings = this.playerService.getTrainingDays();
-
-    this.trainingDays = this.trainingDays.map(day => {
-      return day;
+    // Obtener jugadores de forma asincrónica
+    this.playerService.getPlayers().subscribe((players: Player[]) => {
+      this.players = players;
     });
+
+    // Generamos los días de entrenamiento del mes actual
+    this.generateTrainingDays();
   }
 
-  //Método para obtener el mes actual al cambiar de mes
+  // Obtener el nombre del mes actual
   get currentMonthName(): string {
     return this.months[this.currentMonth];
   }
 
-  //Método para obtener el día de la semana dependiendo del número de la variables dayOfWeek
+  // Obtener el nombre del día de la semana de un entrenamiento
   getDayName(day: Date): string {
     const dayOfWeek = day.getDay();
     const days = {
@@ -45,17 +43,18 @@ export class AssistanceComponent {
     return days[dayOfWeek as 2 | 4 | 5] || '';
   }
 
-  //Método para ordenar a los jugadores según sus posiciones
+  // Ordenar jugadores por posición
   get playersSorted() {
-    return this.playerService.getPlayers().sort((a, b) => this.comparePositions(a.position, b.position));
+    return this.players.sort((a, b) => this.comparePositions(a.position, b.position));
   }
 
-  //Método para comparar y ordenar a los jugadores según su posición
+  // Comparar posiciones para ordenar a los jugadores
   comparePositions(posA: string, posB: string): number {
     const order = ['Base', 'Escolta', 'Alero', 'Ala pivot', 'Pivot', 'Cadete'];
     return order.indexOf(posA) - order.indexOf(posB);
   }
 
+  // Generar los días de entrenamiento del mes
   generateTrainingDays() {
     this.trainingDays = [];
     let currentMonth = this.currentMonth;
@@ -71,31 +70,31 @@ export class AssistanceComponent {
 
     if (currentMonth === 8 && currentYear === 2024) {
       for (let day = 5; day <= daysInMonth; day++) {
-          const date = new Date(currentYear, currentMonth, day);
-          const dayOfWeek = date.getDay();
+        const date = new Date(currentYear, currentMonth, day);
+        const dayOfWeek = date.getDay();
 
-          if ((dayOfWeek === 2 || dayOfWeek === 4) && !excludedDates.some(d => d.getTime() === date.getTime())) {
-              this.trainingDays.push({ date: new Date(date) });
-          }
+        if ((dayOfWeek === 2 || dayOfWeek === 4) && !excludedDates.some(d => d.getTime() === date.getTime())) {
+          this.trainingDays.push({ date: new Date(date) });
+        }
       }
     } else if (currentYear > 2024 || (currentYear === 2024 && currentMonth >= 9)) {
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(currentYear, currentMonth, day);
-            const dayOfWeek = date.getDay();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const dayOfWeek = date.getDay();
 
-            if ((dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && !excludedDates.some(d => d.getTime() === date.getTime())) {
-                this.trainingDays.push({ date: new Date(date) });
-            }
+        if ((dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && !excludedDates.some(d => d.getTime() === date.getTime())) {
+          this.trainingDays.push({ date: new Date(date) });
         }
+      }
     }
   }
 
-  //Método para obtener la cuenta de cuantos jugadores han acudido a cada entrenamiento
+  // Obtener la cuenta de jugadores presentes en un entrenamiento
   getAttendanceCount(date: string): number {
     return this.players.filter(player => player.attendance[date]).length;
   }
 
-  //Método para alternar la asistencia de un jugador a un entrenamiento
+  // Alternar la asistencia de un jugador
   toggleAttendance(playerId: number, date: Date, event: Event) {
     const target = event.target as HTMLInputElement;
     const attended = target.checked;
@@ -103,7 +102,7 @@ export class AssistanceComponent {
     this.playerService.updatePlayerAttendance(playerId, formattedDate, attended);
   }
 
-  //Método para formatear la fecha y mostrarla como dia/mes/año
+  // Formatear fecha en formato 'día/mes/año'
   formatDate(date: Date): string {
     if (!date) return '';
     const day = date.getDate().toString().padStart(2, '0');
@@ -112,7 +111,7 @@ export class AssistanceComponent {
     return `${day}/${month}/${year}`;
   }
 
-  //Método para cambiar al mes anterior
+  // Cambiar al mes anterior
   previousMonth() {
     if (this.currentYear === 2024 && this.currentMonth === 8) {
       return;
@@ -124,11 +123,11 @@ export class AssistanceComponent {
       this.currentYear--;
     }
 
-    //Generamos los días de entrenamientos del mes seleccionado
+    // Generar los días de entrenamientos del mes seleccionado
     this.generateTrainingDays();
   }
 
-  //Método para cambiar al siguiente mes
+  // Cambiar al siguiente mes
   nextMonth() {
     if (this.currentMonth < 11) {
       this.currentMonth++;
@@ -137,7 +136,7 @@ export class AssistanceComponent {
       this.currentYear++;
     }
 
-    //Generamos los días de entrenamientos del mes seleccionado
+    // Generar los días de entrenamientos del mes seleccionado
     this.generateTrainingDays();
   }
 }

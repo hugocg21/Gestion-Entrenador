@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
+import { Observable } from 'rxjs';
+import { Player } from '../../models/player.model';
 
 @Component({
   selector: 'trainings-list',
   templateUrl: './trainings-list.component.html'
 })
-export class TrainingsListComponent implements OnInit{
+export class TrainingsListComponent implements OnInit {
   weeks: { number: number; trainingDays: Date[] }[] = [];
   players: Player[] = [];
   currentMonth = new Date().getMonth();
@@ -17,8 +18,11 @@ export class TrainingsListComponent implements OnInit{
   constructor(private playerService: PlayerService) {}
 
   ngOnInit() {
-    this.players = this.playerService.getPlayers();
-    this.generateWeeks();
+    // Obtener los jugadores desde Firestore
+    this.playerService.getPlayers().subscribe(players => {
+      this.players = players;
+      this.generateWeeks();
+    });
   }
 
   generateWeeks() {

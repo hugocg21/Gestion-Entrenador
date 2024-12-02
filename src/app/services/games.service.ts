@@ -1,39 +1,32 @@
 import { Injectable } from "@angular/core";
+import { Observable } from 'rxjs';
 import { Game } from "../models/game.model";
+import { AngularFirestore } from "@angular/fire/compat/firestore";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GamesService {
-  private localStorageGamesKey = 'games';
-  private games: Game[] = [];
+  private gamesCollection;
 
-  constructor() {
-    this.loadGamesFromLocalStorage();
+  constructor(private firestore: AngularFirestore) {
+    this.gamesCollection = this.firestore.collection<Game>('games');
   }
 
-  getGames(): Game[] {
-    return this.games;
+  // Obtener todos los partidos
+  getGames(): Observable<Game[]> {
+    return this.gamesCollection.valueChanges({ idField: 'id' });
   }
 
-  addGame(game: Game){
-    this.games.push(game);
-    this.saveToLocalStorage();
+  // Añadir un partido
+  addGame(game: Game) {
+    const gameRef = this.gamesCollection.doc(game.id.toString());
+    return gameRef.set(game);
   }
 
+  // Eliminar un partido
   removeGame(gameId: number) {
-    this.games = this.games.filter(game => game.id !== gameId);
-    this.saveToLocalStorage();
-  }
-
-  private saveToLocalStorage() {
-    localStorage.setItem(this.localStorageGamesKey, JSON.stringify(this.games));
-  }
-
-  private loadGamesFromLocalStorage() {
-    const gamesData = localStorage.getItem(this.localStorageGamesKey);
-    if (gamesData) {
-      this.games = JSON.parse(gamesData);
-    }
+    const gameRef = this.gamesCollection.doc(gameId.toString());
+    return gameRef.delete();
   }
 }

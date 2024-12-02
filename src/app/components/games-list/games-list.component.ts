@@ -3,6 +3,7 @@ import { PlayerService } from '../../services/player.service';
 import { Player } from '../../models/player.model';
 import { GamesService } from '../../services/games.service';
 import { Game } from '../../models/game.model';
+import { Observable } from 'rxjs'; // Necesario para Observable
 
 @Component({
   selector: 'games-list',
@@ -25,14 +26,21 @@ export class GamesListComponent implements OnInit {
   constructor(private playerService: PlayerService, private gamesService: GamesService) {}
 
   ngOnInit(): void {
-    // Obtenemos la lista de jugadores
-    this.players = this.playerService.getPlayers();
+    // Obtenemos la lista de jugadores de manera asíncrona
+    this.playerService.getPlayers().subscribe(
+      (players: Player[]) => {
+        this.players = players; // Asignamos los jugadores cuando se reciben
+      },
+      (error) => {
+        console.error('Error al obtener los jugadores:', error); // Manejo de errores
+      }
+    );
   }
 
   // Método para ordenar los partidos por fecha
-  get gamesSorted() {
-    return this.gamesService.getGames().sort((a, b) => this.compareDates(a.date, b.date));
-  }
+  // get gamesSorted() {
+    // return this.gamesService.getGames().sort((a, b) => this.compareDates(a.date, b.date));
+  // }
 
   // Método para comparar las fechas de los partidos
   compareDates(dateA: string, dateB: string): number {
@@ -60,7 +68,7 @@ export class GamesListComponent implements OnInit {
       location: this.newGame.location!,
       opponent: this.newGame.opponent!,
       selectedPlayers: this.newGame.selectedPlayers!,
-    }
+    };
 
     this.gamesService.addGame(game);
 
@@ -68,23 +76,23 @@ export class GamesListComponent implements OnInit {
     this.closeModal();
   }
 
-  removeGame(gameId: number){
+  removeGame(gameId: number) {
     this.gamesService.removeGame(gameId);
     this.games = this.games.filter(game => game.id !== gameId);
   }
 
-  formatDate(date: string): string{
+  formatDate(date: string): string {
     const [year, month, day] = date.split('-');
     const newDate = this.newGame.date = `${day}/${month}/${year}`;
     return newDate;
   }
 
-  //Métodos para abrir el modal de creación de jugadores
+  // Métodos para abrir el modal de creación de jugadores
   openModal() {
     this.showModal = true;
   }
 
-  //Método para cerrar el modal de creación de jugadores
+  // Método para cerrar el modal de creación de jugadores
   closeModal() {
     this.showModal = false;
   }

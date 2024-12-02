@@ -21,11 +21,11 @@ export class PlayersListComponent implements OnInit {
   constructor(private playerService: PlayerService) {}
 
   ngOnInit(): void {
-    //Cargamos la lista de jugadores llamando al método que nos devuelve todos los jugadores creados
-    this.players = this.playerService.getPlayers();
-
-    //Llamamos al método para generar los días de entrenamientos
-    this.generateTrainingDays();
+    // Nos suscribimos al Observable que retorna el servicio y asignamos los jugadores
+    this.playerService.getPlayers().subscribe(players => {
+      this.players = players;
+      this.generateTrainingDays(); // Llamamos al método para generar los días de entrenamientos
+    });
   }
 
   //Método para generar los días de entrenamientos
