@@ -30,93 +30,79 @@ export class PlayersListComponent implements OnInit {
 
   //Método para generar los días de entrenamientos
   generateTrainingDays() {
-    this.trainingDays = []; //Vaciamos la lista de días de entrenamiento
-    const startDate = new Date(2024, 8, 5); //Variable para fijar la fecha de inicio de entrenamientos
-    const today = new Date(); //Variable con la fecha actual
-    let currentDate = new Date(startDate); //Variable que se inicializa con el día de inicios de entrenamiento y representa el día actual en el bucle, que se irá actualizando
+    this.trainingDays = [];
+    const startDate = new Date(2024, 8, 5); // Fecha de inicio de entrenamientos
+    const today = new Date();
+    let currentDate = new Date(startDate);
 
-    // Definición de fechas excluidas
+    // Fechas excluidas
     const excludedDates = [
       new Date(2024, 10, 1), // 1 de noviembre
       new Date(2024, 10, 8), // 8 de noviembre
       new Date(2024, 10, 15), // 15 de noviembre
-      new Date(2024, 10, 22) // 22 de noviembre
+      new Date(2024, 10, 22)  // 22 de noviembre
     ];
 
-    //Mientras el día de entrenamiento sea anterior al día actual entra en el bucle
     while (currentDate <= today) {
-      const dayOfWeek = currentDate.getDay(); //Variable que obtiene el día actual de la semana
-      const currentMonth = currentDate.getMonth(); //Variable que obtiene el mes actual del año
+      const dayOfWeek = currentDate.getDay();
+      const currentMonth = currentDate.getMonth();
 
-      //Bucle que añade a la lista los días que sean de entrenamiento
-      //Para septiembre solo se tienen en cuenta los martes y jueves
       if (currentMonth === 8 && (dayOfWeek === 2 || dayOfWeek === 4)) {
         if (!excludedDates.some(d => d.getTime() === currentDate.getTime())) {
           this.trainingDays.push({ date: new Date(currentDate) });
         }
-      }
-      //Para el resto de meses se tienen en cuenta los martes, jueves y viernes
-      else if (currentMonth >= 9 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5)) {
+      } else if (currentMonth >= 9 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5)) {
         if (!excludedDates.some(d => d.getTime() === currentDate.getTime())) {
           this.trainingDays.push({ date: new Date(currentDate) });
         }
       }
 
-      //Despues de comprobar si la fecha actual se debe incluir en la lista, se avanza al día siguiente
       currentDate.setDate(currentDate.getDate() + 1);
     }
+
+    console.log('Training days:', this.trainingDays.map(day => this.formatDate(day.date)));
   }
+
 
   //Método para obtener los entrenamientos a los que ha asistido cada jugador
   getPlayerAttendance(player: Player): number {
-    const attendanceDateStartRodri = new Date(2024, 9, 12); // Fecha desde la cual Rodri solo cuenta su asistencia
-    const attendanceDateStartMiyan = new Date(2024, 10, 6); // Fecha desde la cual Rodri solo cuenta su asistencia
-
-    return this.trainingDays.filter(day => {
-      return player.attendance[this.formatDate(day.date)];
-    }).length;
+    if (!player.attendance) return 0; // Si no hay datos, retorna 0
+    return Object.values(player.attendance).filter(attended => attended === true).length;
   }
 
   // Método modificado para obtener el total de entrenamientos aplicable a cada jugador individualmente
   getTotalTrainings(player: Player): number {
-    const attendanceDateStartRodri = new Date(2024, 9, 8); // Fecha desde la cual Rodri solo cuenta su asistencia
-    const attendanceDateStartMiyan = new Date(2024, 10, 6); // Fecha desde la cual Rodri solo cuenta su asistencia
-
     return this.trainingDays.filter(day => {
       const dayDate = new Date(day.date);
+      const dayOfWeek = dayDate.getDay();
 
-      // Para jugadores cadete, desde octubre solo cuentan los jueves
-      if (player.position === 'Cadete' && dayDate.getDay() !== 4) {
-        return false;
+      // Regla general para jugadores cadete
+      if (player.position === 'Cadete' && dayOfWeek !== 4) {
+        return false; // Solo cuentan los jueves
       }
 
+      // Regla específica para Miyan
       if (player.firstName === 'Miyan') {
-        // Si la fecha es antes del 6 de noviembre de 2024
-        if (dayDate < attendanceDateStartMiyan) {
-          // Solo se cuentan los jueves (getDay() === 4 representa jueves)
-          if (dayDate.getDay() === 4) {
-            return true; // Se cuenta el jueves
-          } else {
-            return false; // No se cuenta si no es jueves
-          }
-        } else {
-          // A partir del 6 de noviembre de 2024, se cuentan los martes (getDay() === 2) y jueves (getDay() === 4)
-          if (dayDate.getDay() === 2 || dayDate.getDay() === 4) {
-            return true; // Se cuenta si es martes o jueves
-          } else {
-            return false; // No se cuenta si no es martes ni jueves
-          }
+        const cutoffDate = new Date(2024, 10, 6);
+        if (dayDate < cutoffDate && dayOfWeek !== 4) {
+          return false; // Antes del 6 de noviembre, solo jueves
+        } else if (dayDate >= cutoffDate && ![2, 4].includes(dayOfWeek)) {
+          return false; // A partir del 6 de noviembre, martes y jueves
         }
       }
 
-      // Para Rodri, contar solo desde el 8 de octubre
-      if (player.firstName === 'Rodri' && dayDate < attendanceDateStartRodri) {
-        return false;
+      // Regla específica para Rodri
+      if (player.firstName === 'Rodri') {
+        const startDate = new Date(2024, 9, 8);
+        if (dayDate < startDate) {
+          return false; // Solo cuenta desde el 8 de octubre
+        }
       }
 
-      return day;
+      return true; // Si pasa todas las reglas
     }).length;
   }
+
 
   // Método para calcular el porcentaje de asistencia
   calculateAttendancePercentage(player: Player): number {
@@ -142,7 +128,6 @@ export class PlayersListComponent implements OnInit {
     if (this.editing && this.currentPlayer) {
       // Actualizar el jugador existente
       this.currentPlayer.firstName = this.newPlayer.firstName!;
-      this.currentPlayer.lastName = this.newPlayer.lastName!;
       this.currentPlayer.position = this.newPlayer.position!;
       this.currentPlayer.dorsal = this.newPlayer.dorsal!;
       this.currentPlayer.image = this.imagePreview || this.currentPlayer.image;
@@ -154,7 +139,6 @@ export class PlayersListComponent implements OnInit {
       const player: Player = {
         id: newId,
         firstName: this.newPlayer.firstName!,
-        lastName: this.newPlayer.lastName!,
         position: this.newPlayer.position!,
         dorsal: this.newPlayer.dorsal!,
         image: this.imagePreview || null,
@@ -193,10 +177,11 @@ export class PlayersListComponent implements OnInit {
 
   //Método para formatear la fecha y mostrarla como dia/mes/año
   formatDate(date: Date): string {
+    if (!date) return '';
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`; // Formato YYYY-MM-DD
   }
 
   //Métodos para abrir el modal de creación de jugadores
@@ -206,7 +191,6 @@ export class PlayersListComponent implements OnInit {
       this.currentPlayer = playerToEdit;
       this.newPlayer = {
         firstName: playerToEdit.firstName,
-        lastName: playerToEdit.lastName,
         position: playerToEdit.position,
         dorsal: playerToEdit.dorsal
       };
@@ -219,7 +203,6 @@ export class PlayersListComponent implements OnInit {
     }
     this.showModal = true;
   }
-
 
   //Método para cerrar el modal de creación de jugadores
   closeModal() {

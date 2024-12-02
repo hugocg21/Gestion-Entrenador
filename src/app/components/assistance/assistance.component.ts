@@ -99,8 +99,18 @@ export class AssistanceComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     const attended = target.checked;
     const formattedDate = this.formatDate(date);
-    this.playerService.updatePlayerAttendance(playerId, formattedDate, attended);
+
+    this.playerService.updatePlayerAttendance(playerId, formattedDate, attended)
+      .then(() => {
+        console.log(`Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`);
+      })
+      .catch(error => {
+        console.error('Error al actualizar la asistencia:', error);
+        // Si hay un error, revertir el cambio visual
+        target.checked = !attended;
+      });
   }
+
 
   // Formatear fecha en formato 'día/mes/año'
   formatDate(date: Date): string {
@@ -108,7 +118,7 @@ export class AssistanceComponent implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${year}-${month}-${day}`; // Formato YYYY-MM-DD
   }
 
   // Cambiar al mes anterior

@@ -27,7 +27,7 @@
         <div class="max-h-60 overflow-y-auto border rounded p-2">
           <div *ngFor="let player of players" class="flex items-center mb-2">
             <input type="checkbox" [checked]="newGame.selectedPlayers?.includes(player.id)" (change)="togglePlayerSelection(player.id)">
-            <label class="ml-2">{{ player.firstName }} {{ player.lastName }}</label>
+            <label class="ml-2">{{ player.firstName }}</label>
           </div>
         </div>
 

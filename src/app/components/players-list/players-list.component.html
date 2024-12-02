@@ -18,7 +18,6 @@
       <form (ngSubmit)="addPlayer()" class="space-y-4">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Agregar Jugador</h2>
         <input type="text" [(ngModel)]="newPlayer.firstName" name="firstName" placeholder="Nombre" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
-        <input type="text" [(ngModel)]="newPlayer.lastName" name="lastName" placeholder="Apellidos" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         <input type="text" [(ngModel)]="newPlayer.position" name="position" placeholder="Posición" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         <input type="number" [(ngModel)]="newPlayer.dorsal" name="dorsal" placeholder="Dorsal" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
         <input type="file" (change)="onImageSelected($event)" class="p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -26,35 +25,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Botón de ordenación para porcentaje de asistencia -->
-  <!-- <button (click)="changeOrderCategory('attendance')" class="text-blue-600 flex items-center">
-    <span>Asistencia</span>
-    <svg *ngIf="orderCategory === 'attendance'" [ngClass]="{'rotate-180': orderDirection === 'desc'}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-
-  <button (click)="changeOrderCategory('name')" class="text-blue-600 flex items-center">
-    <span>Nombre</span>
-    <svg *ngIf="orderCategory === 'name'" [ngClass]="{'rotate-180': orderDirection === 'desc'}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-
-  <button (click)="changeOrderCategory('dorsal')" class="text-blue-600 flex items-center">
-    <span>Dorsal</span>
-    <svg *ngIf="orderCategory === 'dorsal'" [ngClass]="{'rotate-180': orderDirection === 'desc'}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-
-  <button (click)="changeOrderCategory('position')" class="text-blue-600 flex items-center">
-    <span>Posición</span>
-    <svg *ngIf="orderCategory === 'position'" [ngClass]="{'rotate-180': orderDirection === 'desc'}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button> -->
 
   <div class="flex items-center space-x-4">
     <!-- Select para elegir la categoría de ordenación -->
@@ -88,7 +58,7 @@
 
           <!-- Imagen del jugador -->
         <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
-          <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }} {{ player.lastName }}" class="w-full h-full object-cover" />
+          <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }}" class="w-full h-full object-cover" />
         </div>
       </div>
 
