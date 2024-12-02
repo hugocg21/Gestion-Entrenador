@@ -26,7 +26,7 @@
                 <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }}" class="w-full h-full object-cover">
               </div>
               <div>
-                <p class="font-medium text-gray-800">{{ player.firstName }} {{ player.lastName }}</p>
+                <p class="font-medium text-gray-800">{{ player.firstName }}</p>
                 <p *ngIf="player.position != 'Cadete'" class="text-sm text-gray-500">#{{ player.dorsal }}</p>
               </div>
             </div>
