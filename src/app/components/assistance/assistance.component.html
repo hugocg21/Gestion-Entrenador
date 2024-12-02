@@ -1,51 +1,39 @@
 <div class="p-6 rounded-xl shadow-lg">
-  <!-- Controles para cambiar de mes -->
   <div class="flex justify-between items-center mb-6">
-    <button (click)="previousMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-      Anterior
-    </button>
+    <button (click)="previousMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Anterior</button>
     <h2 class="text-2xl font-bold text-white">Mes: {{ currentMonthName }}</h2>
-    <button (click)="nextMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-      Siguiente
-    </button>
+    <button (click)="nextMonth()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Siguiente</button>
   </div>
 
-  <!-- Tabla de asistencia -->
   <div class="overflow-x-auto bg-white shadow-md rounded-lg">
     <table class="table-auto w-full">
       <thead class="bg-indigo-100 text-indigo-800">
         <tr>
-          <th class="px-6 py-3 text-left">Jugador</th>
-          <!-- Mostrar días de entrenamiento -->
-          <th *ngFor="let day of trainingDays" class="px-4 py-3">
-            {{ formatDate(day.date) }}
-            <br />
-            <small *ngIf="!day.cancelled">{{ getAttendanceCount(formatDate(day.date)) }} / {{ players.length }} han asistido</small>
+          <th>Jugador</th>
+          <th *ngFor="let day of trainingDays">
+            <div class="flex flex-col text-center">
+              <span>{{ getDayName(day.date) }} <span class="text-sm">{{ day.date | date: 'dd/MM' }}</span></span>
+              <span class="text-xs">{{ getAttendanceCount(formatDate(day.date)) }} / {{ players.length }} han asistido</span>
+            </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let player of players" class="border-b last:border-none">
+        <tr *ngFor="let player of playersSorted" class="border-b last:border-none">
           <td class="px-6 py-4">
             <div class="flex items-center">
-              <!-- Foto del jugador -->
               <div class="w-10 h-10 rounded-full overflow-hidden mr-4">
                 <img *ngIf="player.image" [src]="player.image" alt="{{ player.firstName }}" class="w-full h-full object-cover">
               </div>
-              <!-- Nombre del jugador -->
               <div>
                 <p class="font-medium text-gray-800">{{ player.firstName }} {{ player.lastName }}</p>
                 <p *ngIf="player.position != 'Cadete'" class="text-sm text-gray-500">#{{ player.dorsal }}</p>
               </div>
             </div>
           </td>
-          <!-- Generar los campos de asistencia por cada día -->
           <td *ngFor="let day of trainingDays" class="px-4 py-4 text-center">
-            <input type="checkbox"
-                   [checked]="player.attendance[formatDate(day.date)] ?? false"
-                   [disabled]="day.cancelled"
-                   class="h-5 w-5 text-indigo-600 focus:ring-indigo-500"
-                   (change)="toggleAttendance(player.id, day.date, $event)" />
+            <input type="checkbox" [checked]="player.attendance[formatDate(day.date)] ?? false" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500"
+              (change)="toggleAttendance(player.id, day.date, $event)"/>
           </td>
         </tr>
       </tbody>
