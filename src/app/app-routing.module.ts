@@ -6,6 +6,7 @@ import { TrainingsListComponent } from './components/trainings-list/trainings-li
 import { GamesListComponent } from './components/games-list/games-list.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'players-list', pathMatch: 'full' }, // Ruta por defecto
   { path: 'assistance', component: AssistanceComponent },
   { path: 'players-list', component: PlayersListComponent },
   { path: 'trainings-list', component: TrainingsListComponent },
