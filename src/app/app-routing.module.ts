@@ -4,6 +4,7 @@ import { AssistanceComponent } from './components/assistance/assistance.componen
 import { PlayersListComponent } from './components/players-list/players-list.component';
 import { TrainingsListComponent } from './components/trainings-list/trainings-list.component';
 import { GamesListComponent } from './components/games-list/games-list.component';
+import { GameMinutesComponent } from './components/game-minutes/game-minutes.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'players-list', pathMatch: 'full' }, // Ruta por defecto
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'players-list', component: PlayersListComponent },
   { path: 'trainings-list', component: TrainingsListComponent },
   { path: 'games-list', component: GamesListComponent },
+  { path: 'games-minutes', component: GameMinutesComponent },
 ]
 
 @NgModule({

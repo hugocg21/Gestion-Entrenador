@@ -1,0 +1,12 @@
+<div class="container mx-auto p-4">
+  <div class="flex justify-between my-4">
+    <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" (click)="prevPlayer()" [disabled]="currentPlayerIndex === 0">Anterior</button>
+
+    <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" (click)="nextPlayer()" [disabled]="currentPlayerIndex === players.length - 1">Siguiente</button>
+  </div>
+
+  <!-- Contenedor del gráfico -->
+  <div id="chartContainer" class="my-4"></div>
+
+  <!-- Botones de control para cambiar de jugador -->
+</div>

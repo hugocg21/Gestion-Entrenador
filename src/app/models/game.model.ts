@@ -4,5 +4,7 @@ export interface Game {
   time: string;
   location: string;
   opponent: string;
-  selectedPlayers: number[]; // IDs de jugadores seleccionados
+  ownPoints: number;
+  opponentPoints: number;
+  playerMinutes: { [playerId: string]: number };
 }

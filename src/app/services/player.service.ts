@@ -16,7 +16,7 @@ export class PlayerService {
   }
 
   getPlayers(): Observable<Player[]> {
-    return this.playersCollection.valueChanges({ idField: 'id' });
+    return this.firestore.collection<Player>('players').valueChanges({ idField: 'id' });
   }
 
   getTrainingDays(): Observable<{ date: string }[]> {
@@ -40,13 +40,15 @@ export class PlayerService {
 
   updatePlayerAttendance(playerId: number, date: string, attended: boolean) {
     const playerRef = this.playersCollection.doc(playerId.toString());
-    return playerRef.update({
-      [`attendance.${date}`]: attended,
-    });
+    return playerRef.update({ [`attendance.${date}`]: attended });
   }
 
   updateTrainingStatus(date: string) {
     const trainingRef = this.trainingDaysCollection.doc(date);
     return trainingRef.set({ date });
+  }
+
+  updatePlayerGameMinutes(playerId: string, gameId: string, minutes: number): Promise<void> {
+    return this.firestore.collection('players').doc(playerId).update({ [`gameMinutes.${gameId}`]: minutes });
   }
 }

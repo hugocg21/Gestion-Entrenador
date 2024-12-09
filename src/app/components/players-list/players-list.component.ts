@@ -40,7 +40,8 @@ export class PlayersListComponent implements OnInit {
       new Date(2024, 10, 1), // 1 de noviembre
       new Date(2024, 10, 8), // 8 de noviembre
       new Date(2024, 10, 15), // 15 de noviembre
-      new Date(2024, 10, 22)  // 22 de noviembre
+      new Date(2024, 10, 22), // 22 de noviembre
+      new Date(2024, 11, 6) // 6 de diciembre
     ];
 
     while (currentDate <= today) {
@@ -103,7 +104,6 @@ export class PlayersListComponent implements OnInit {
     }).length;
   }
 
-
   // Método para calcular el porcentaje de asistencia
   calculateAttendancePercentage(player: Player): number {
     const totalTrainings = this.getTotalTrainings(player);
@@ -142,7 +142,8 @@ export class PlayersListComponent implements OnInit {
         position: this.newPlayer.position!,
         dorsal: this.newPlayer.dorsal!,
         image: this.imagePreview || null,
-        attendance: {}
+        attendance: {},
+        gameMinutes: {}
       };
 
       this.playerService.addPlayer(player);

@@ -65,7 +65,8 @@ export class AssistanceComponent implements OnInit {
       new Date(2024, 10, 1), // 1 de noviembre
       new Date(2024, 10, 8), // 8 de noviembre
       new Date(2024, 10, 15), // 15 de noviembre
-      new Date(2024, 10, 22) // 22 de noviembre
+      new Date(2024, 10, 22), // 22 de noviembre
+      new Date(2024, 11, 6) // 6 de diciembre
     ];
 
     if (currentMonth === 8 && currentYear === 2024) {
@@ -100,15 +101,13 @@ export class AssistanceComponent implements OnInit {
     const attended = target.checked;
     const formattedDate = this.formatDate(date);
 
-    this.playerService.updatePlayerAttendance(playerId, formattedDate, attended)
-      .then(() => {
-        console.log(`Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`);
-      })
-      .catch(error => {
-        console.error('Error al actualizar la asistencia:', error);
-        // Si hay un error, revertir el cambio visual
-        target.checked = !attended;
-      });
+    this.playerService.updatePlayerAttendance(playerId, formattedDate, attended).then(() => {
+      console.log(`Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`);
+    }).catch(error => {
+      console.error('Error al actualizar la asistencia:', error);
+      // Si hay un error, revertir el cambio visual
+      target.checked = !attended;
+    });
   }
 
 

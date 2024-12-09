@@ -3,6 +3,7 @@ export interface Player {
   firstName: string;
   position: string;
   image: string | ArrayBuffer | null;
-  dorsal: number; // Nuevo campo para el dorsal del jugador
+  dorsal: number;
   attendance: { [key: string]: boolean };
+  gameMinutes: { [gameId: string]: number };
 }

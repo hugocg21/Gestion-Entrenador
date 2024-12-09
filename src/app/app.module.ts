@@ -13,6 +13,7 @@ import { GamesListComponent } from './components/games-list/games-list.component
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
+import { GameMinutesComponent } from './components/game-minutes/game-minutes.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { environment } from '../environments/environment';
     AssistanceComponent,
     PlayersListComponent,
     TrainingsListComponent,
-    GamesListComponent
+    GamesListComponent,
+    GameMinutesComponent
   ],
   imports: [
     BrowserModule,
