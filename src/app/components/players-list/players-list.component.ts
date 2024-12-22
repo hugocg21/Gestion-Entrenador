@@ -41,7 +41,8 @@ export class PlayersListComponent implements OnInit {
       new Date(2024, 10, 8), // 8 de noviembre
       new Date(2024, 10, 15), // 15 de noviembre
       new Date(2024, 10, 22), // 22 de noviembre
-      new Date(2024, 11, 6) // 6 de diciembre
+      new Date(2024, 11, 6), // 6 de diciembre
+      new Date(2024, 11, 13) // 13 de diciembre
     ];
 
     while (currentDate <= today) {
