@@ -68,6 +68,15 @@ export class PlayersListComponent implements OnInit {
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
+    // Agregar el 08/01/2025 como un día de entrenamiento específico
+    const specificDate = new Date(2025, 0, 8); // 08 de enero de 2025
+    if (
+      specificDate.getFullYear() === currentYear &&
+      specificDate.getMonth() === currentMonth
+    ) {
+      this.trainingDays.push({ date: specificDate });
+    }
+
     console.log('Training days:', this.trainingDays.map(day => this.formatDate(day.date)));
   }
 
