@@ -36,11 +36,12 @@ export class AssistanceComponent implements OnInit {
     const dayOfWeek = day.getDay();
     const days = {
       2: 'Martes',
+      3: 'Miercoles',
       4: 'Jueves',
       5: 'Viernes',
     } as const;
 
-    return days[dayOfWeek as 2 | 4 | 5] || '';
+    return days[dayOfWeek as 2 | 3 | 4 | 5] || '';
   }
 
   // Ordenar jugadores por posición
