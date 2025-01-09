@@ -105,6 +105,9 @@ export class AssistanceComponent implements OnInit {
     ) {
       this.trainingDays.push({ date: specificDate });
     }
+
+    // Ordenar los días de entrenamiento por fecha
+    this.trainingDays.sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
   // Obtener la cuenta de jugadores presentes en un entrenamiento
