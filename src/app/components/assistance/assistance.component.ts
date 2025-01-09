@@ -96,6 +96,15 @@ export class AssistanceComponent implements OnInit {
         }
       }
     }
+
+    // Agregar el 08/01/2025 como un día de entrenamiento específico
+    const specificDate = new Date(2025, 0, 8); // 08 de enero de 2025
+    if (
+      specificDate.getFullYear() === currentYear &&
+      specificDate.getMonth() === currentMonth
+    ) {
+      this.trainingDays.push({ date: specificDate });
+    }
   }
 
   // Obtener la cuenta de jugadores presentes en un entrenamiento
