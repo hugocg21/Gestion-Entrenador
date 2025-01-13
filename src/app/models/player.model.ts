@@ -5,5 +5,13 @@ export interface Player {
   image: string | ArrayBuffer | null;
   dorsal: number;
   attendance: { [key: string]: boolean };
-  gameMinutes: { [gameId: string]: number };
+  gameMinutes: {
+    [gameId: string]: {
+      minutes: number;
+      points: number;
+      fouls: number;
+      freeThrows: { made: number; attempted: number };
+      efficiency: number;
+    };
+  };
 }

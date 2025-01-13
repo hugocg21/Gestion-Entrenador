@@ -26,7 +26,26 @@ export class GamesListComponent implements OnInit {
   showModal: boolean = false; //Booleano para mostrar u ocultar el modal de creación de jugadores
   showGameMinutesModal: boolean = false; // Booleano para mostrar u ocultar el modal de asignar minutos
   selectedGame!: Game; // Partido seleccionado
-  gameMinutes: { [playerId: string]: number } = {}; // Minutos jugados por cada jugador
+  gameMinutes: {
+    [playerId: string]: {
+      minutes: number;
+      points: number;
+      fouls: number;
+      freeThrows: { made: number; attempted: number };
+      efficiency: number;
+    };
+  } = {};
+
+  // Declarar gameStats
+  gameStats: {
+    [playerId: number]: {
+      minutes: number;
+      points: number;
+      fouls: number;
+      freeThrows: { made: number; attempted: number };
+      efficiency: number;
+    };
+  } = {};
 
   //Constructor que crea un objeto del PlayerService
   constructor(private playerService: PlayerService, private gamesService: GamesService) {}
@@ -144,18 +163,38 @@ export class GamesListComponent implements OnInit {
   updateLocation(location: string): void {
     this.newGame.location = location.trim();
     if (this.newGame.location.toUpperCase() !== 'PAB. PERCHERA-LA BRAÑA') {
-      this.isVisitor = true; // Aquí usamos '=' para asignar
+      this.isVisitor = true;
     } else {
-      this.isVisitor = false; // Aquí también
+      this.isVisitor = false;
     }
   }
 
   // Método para abrir el modal y pasar el partido seleccionado
-  openGameMinutesModal(game: Game) {
+  openGameMinutesModal(game: Game): void {
     this.selectedGame = game;
-    this.gameMinutes = { ...game.playerMinutes }; // Inicializar los minutos ya asignados, si los hay
+
+    // Inicializar `gameStats` para cada jugador
+    this.players.forEach((player) => {
+      this.playerService.getPlayerById(player.id.toString()).subscribe((playerData) => {
+        if (playerData && playerData.gameMinutes && playerData.gameMinutes[game.id]) {
+          // Cargar las estadísticas específicas de este partido
+          this.gameStats[player.id] = { ...playerData.gameMinutes[game.id] };
+        } else {
+          // Si no hay datos para este partido, inicializa con valores predeterminados
+          this.gameStats[player.id] = {
+            minutes: 0,
+            points: 0,
+            fouls: 0,
+            freeThrows: { made: 0, attempted: 0 },
+            efficiency: 0,
+          };
+        }
+      });
+    });
+
     this.showGameMinutesModal = true;
   }
+
 
   // Método para cerrar el modal de asignación de minutos
   closeGameMinutesModal() {
@@ -163,31 +202,101 @@ export class GamesListComponent implements OnInit {
   }
 
   // Método para actualizar los minutos jugados de cada jugador
-  updateGameMinutes() {
+  updateGameMinutes(): void {
     if (this.selectedGame) {
-      // Actualizar los minutos en el partido seleccionado
-      this.selectedGame.playerMinutes = this.gameMinutes;
-
-      // Llamar al servicio para actualizar el partido en la base de datos
-      this.gamesService.updateGame(this.selectedGame.id, this.selectedGame).then(() => {
-        console.log('Minutos actualizados correctamente');
-
-        // Para cada jugador, actualizar los minutos jugados en ese partido en su documento
-        for (const playerId in this.gameMinutes) {
-          const minutes = this.gameMinutes[playerId];
-
-          // Llamamos al servicio de Player para guardar los minutos del jugador
-          this.playerService.updatePlayerGameMinutes(Number(playerId).toString(), this.selectedGame.id.toString(), minutes).then(() => {
-              console.log(`Minutos de jugador ${playerId} actualizados correctamente.`);
-            }).catch((error) => {
-              console.error(`Error al actualizar los minutos para el jugador ${playerId}:`, error);
-            });
+      // Validar y asegurar que no haya valores undefined
+      Object.keys(this.gameStats).forEach((playerId) => {
+        const stats = this.gameStats[+playerId];
+        if (!stats) {
+          this.gameStats[+playerId] = {
+            minutes: 0,
+            points: 0,
+            fouls: 0,
+            freeThrows: { made: 0, attempted: 0 },
+            efficiency: 0,
+          };
+        } else {
+          // Asegurarse de que cada campo tenga un valor predeterminado
+          stats.minutes = stats.minutes || 0;
+          stats.points = stats.points || 0;
+          stats.fouls = stats.fouls || 0;
+          stats.freeThrows = stats.freeThrows || { made: 0, attempted: 0 };
+          stats.freeThrows.made = stats.freeThrows.made || 0;
+          stats.freeThrows.attempted = stats.freeThrows.attempted || 0;
+          stats.efficiency = stats.efficiency || 0;
         }
-
-        this.closeGameMinutesModal();
-      }).catch((error) => {
-        console.error('Error al actualizar los minutos en el partido:', error);
       });
+
+      // Actualizar las estadísticas en la colección `games`
+      this.selectedGame.playerMinutes = { ...this.gameStats };
+      this.gamesService
+        .updateGame(this.selectedGame.id, this.selectedGame)
+        .then(() => {
+          console.log('Estadísticas actualizadas correctamente en la colección games.');
+
+          // Ahora actualizamos las estadísticas en la colección `players`
+          this.players.forEach((player) => {
+            const stats = this.gameStats[player.id];
+            if (stats) {
+              this.playerService
+                .updatePlayerGameMinutes(player.id.toString(), this.selectedGame.id.toString(), stats)
+                .then(() => {
+                  console.log(`Estadísticas del jugador ${player.firstName} actualizadas en la colección players.`);
+                })
+                .catch((error) => {
+                  console.error(`Error al actualizar estadísticas para ${player.firstName}:`, error);
+                });
+            }
+          });
+
+          this.closeGameMinutesModal();
+        })
+        .catch((error) => {
+          console.error('Error al actualizar estadísticas en la colección games:', error);
+        });
     }
+  }
+
+  isWin(game: Game): boolean {
+    if(game.opponent == 'C.B. PUMARIN 2') return false
+
+    if(game.location == 'PAB. PERCHERA-LA BRAÑA'){
+      if(game.ownPoints > game.opponentPoints) return false
+      else return true
+    } else {
+      if(game.ownPoints > game.opponentPoints) return true
+      else return false
+    }
+  }
+
+  get firstPhaseGames() {
+    const cutoffDate = new Date(2025, 0, 11); // 11/01/2025
+    return this.games.filter(game => new Date(game.date) < cutoffDate);
+  }
+
+  get secondPhaseGames() {
+    const cutoffDate = new Date(2025, 0, 11); // 11/01/2025
+    return this.games.filter(game => new Date(game.date) >= cutoffDate);
+  }
+
+  getFreeThrowsMade(playerId: number): number {
+    return this.gameStats[playerId]?.freeThrows.made || 0;
+  }
+
+  setFreeThrowsMade(playerId: number, value: number): void {
+    if (!this.gameStats[playerId]) {
+      this.initializePlayerStats(playerId);
+    }
+    this.gameStats[playerId].freeThrows.made = value;
+  }
+
+  initializePlayerStats(playerId: number): void {
+    this.gameStats[playerId] = {
+      minutes: 0,
+      points: 0,
+      fouls: 0,
+      freeThrows: { made: 0, attempted: 0 },
+      efficiency: 0,
+    };
   }
 }

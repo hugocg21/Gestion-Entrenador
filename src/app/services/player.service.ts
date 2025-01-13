@@ -19,6 +19,13 @@ export class PlayerService {
     return this.firestore.collection<Player>('players').valueChanges({ idField: 'id' });
   }
 
+  getPlayerById(playerId: string): Observable<Player> {
+    return this.firestore
+      .collection('players')
+      .doc(playerId)
+      .valueChanges() as Observable<Player>;
+  }
+
   getTrainingDays(): Observable<{ date: string }[]> {
     return this.trainingDaysCollection.valueChanges();
   }
@@ -48,7 +55,35 @@ export class PlayerService {
     return trainingRef.set({ date });
   }
 
-  updatePlayerGameMinutes(playerId: string, gameId: string, minutes: number): Promise<void> {
-    return this.firestore.collection('players').doc(playerId).update({ [`gameMinutes.${gameId}`]: minutes });
+  updatePlayerGameMinutes(playerId: string, gameId: string, stats: {
+    minutes: number;
+    points: number;
+    fouls: number;
+    freeThrows: { made: number; attempted: number };
+    efficiency: number;
+  }): Promise<void> {
+    // Asegurarse de que no haya valores undefined en los datos
+    Object.keys(stats).forEach((key) => {
+      if (key === 'minutes') {
+        stats.minutes = stats.minutes || 0;
+      } else if (key === 'points') {
+        stats.points = stats.points || 0;
+      } else if (key === 'fouls') {
+        stats.fouls = stats.fouls || 0;
+      } else if (key === 'freeThrows') {
+        stats.freeThrows = stats.freeThrows || { made: 0, attempted: 0 };
+        stats.freeThrows.made = stats.freeThrows.made || 0;
+        stats.freeThrows.attempted = stats.freeThrows.attempted || 0;
+      } else if (key === 'efficiency') {
+        stats.efficiency = stats.efficiency || 0;
+      }
+    });
+
+    // Actualizar las estadísticas del jugador en Firestore
+    return this.firestore
+      .collection('players')
+      .doc(playerId)
+      .update({ [`gameMinutes.${gameId}`]: stats });
   }
+
 }

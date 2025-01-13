@@ -28,12 +28,11 @@ export class PlayersListComponent implements OnInit {
     });
   }
 
-  //Método para generar los días de entrenamientos
   generateTrainingDays() {
     this.trainingDays = [];
-    const startDate = new Date(2024, 8, 5); // Fecha de inicio de entrenamientos
-    const today = new Date();
-    let currentDate = new Date(startDate);
+    const startDate = new Date(2024, 8, 5); // Fecha de inicio de entrenamientos (5 de septiembre de 2024)
+    const today = new Date(); // Fecha actual
+    let currentDate = new Date(startDate); // Empezamos desde la fecha de inicio
 
     // Fechas excluidas
     const excludedDates = [
@@ -52,34 +51,35 @@ export class PlayersListComponent implements OnInit {
     ];
 
     while (currentDate <= today) {
-      const dayOfWeek = currentDate.getDay();
+      const dayOfWeek = currentDate.getDay(); // Día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
       const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
 
-      if (currentMonth === 8 && (dayOfWeek === 2 || dayOfWeek === 4)) {
-        if (!excludedDates.some(d => d.getTime() === currentDate.getTime())) {
-          this.trainingDays.push({ date: new Date(currentDate) });
-        }
-      } else if (currentMonth >= 9 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5)) {
+      // Reglas de entrenamiento
+      if (
+        (currentMonth === 8 && (dayOfWeek === 2 || dayOfWeek === 4) && currentYear === 2024) || // Septiembre: martes y jueves
+        (currentMonth >= 9 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && currentYear === 2024) || // Octubre en adelante: martes, jueves y viernes
+        (currentMonth >= 0 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && currentYear === 2025) // Octubre en adelante: martes, jueves y viernes
+      ) {
+        // Excluimos las fechas específicas
         if (!excludedDates.some(d => d.getTime() === currentDate.getTime())) {
           this.trainingDays.push({ date: new Date(currentDate) });
         }
       }
 
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate.setDate(currentDate.getDate() + 1); // Avanzamos al siguiente día
     }
 
-    // Agregar el 08/01/2025 como un día de entrenamiento específico
-    const specificDate = new Date(2025, 0, 8); // 08 de enero de 2025
-    if (
-      specificDate.getFullYear() === this.currentYear &&
-      specificDate.getMonth() === this.currentMonth
-    ) {
-      this.trainingDays.push({ date: specificDate });
-    }
+    // Agregar días específicos de entrenamiento
+    const specificDates = [new Date(2025, 0, 8)]; // Agregamos el 8 de enero de 2025
+    specificDates.forEach(specificDate => {
+      if (!this.trainingDays.some(day => day.date.getTime() === specificDate.getTime())) {
+        this.trainingDays.push({ date: specificDate });
+      }
+    });
 
     console.log('Training days:', this.trainingDays.map(day => this.formatDate(day.date)));
   }
-
 
   //Método para obtener los entrenamientos a los que ha asistido cada jugador
   getPlayerAttendance(player: Player): number {
@@ -92,11 +92,6 @@ export class PlayersListComponent implements OnInit {
     return this.trainingDays.filter(day => {
       const dayDate = new Date(day.date);
       const dayOfWeek = dayDate.getDay();
-
-      // Regla general para jugadores cadete
-      if (player.position === 'Cadete' && dayOfWeek !== 4) {
-        return false; // Solo cuentan los jueves
-      }
 
       // Regla específica para Miyan
       if (player.firstName === 'Miyan') {

@@ -1,12 +1,29 @@
 <div class="container mx-auto p-4">
-  <div class="flex justify-between my-4">
+  <div class="flex justify-between mb-4">
     <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" (click)="prevPlayer()" [disabled]="currentPlayerIndex === 0">Anterior</button>
+
+    <!-- Mostrar la media de minutos -->
+    <div class="text-center font-bold text-lg text-gray-400">Media de minutos: {{ averageMinutes | number: '1.2-2' }} min</div>
+
+    <!-- Mostrar el nombre del jugador -->
+    <h2 class="text-center font-bold text-lg text-gray-400">Jugador: {{ players[currentPlayerIndex]?.firstName }}</h2>
 
     <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" (click)="nextPlayer()" [disabled]="currentPlayerIndex === players.length - 1">Siguiente</button>
   </div>
 
-  <!-- Contenedor del gráfico -->
-  <div id="chartContainer" class="my-4"></div>
-
-  <!-- Botones de control para cambiar de jugador -->
+  <!-- Contenedor para las 4 gráficas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="p-4 border rounded-lg shadow-lg">
+      <canvas id="chart1"></canvas>
+    </div>
+    <div class="p-4 border rounded-lg shadow-lg">
+      <canvas id="chart2"></canvas>
+    </div>
+    <div class="p-4 border rounded-lg shadow-lg">
+      <canvas id="chart3"></canvas>
+    </div>
+    <div class="p-4 border rounded-lg shadow-lg">
+      <canvas id="chart4"></canvas>
+    </div>
+  </div>
 </div>
