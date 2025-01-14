@@ -2,9 +2,6 @@
   <div class="flex justify-between mb-4">
     <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" (click)="prevPlayer()" [disabled]="currentPlayerIndex === 0">Anterior</button>
 
-    <!-- Mostrar la media de minutos -->
-    <div class="text-center font-bold text-lg text-gray-400">Media de minutos: {{ averageMinutes | number: '1.2-2' }} min</div>
-
     <!-- Mostrar el nombre del jugador -->
     <h2 class="text-center font-bold text-lg text-gray-400">Jugador: {{ players[currentPlayerIndex]?.firstName }}</h2>
 
@@ -25,5 +22,8 @@
     <div class="p-4 border rounded-lg shadow-lg">
       <canvas id="chart4"></canvas>
     </div>
+    <!-- <div class="p-4 border rounded-lg shadow-lg">
+      <canvas id="chart5"></canvas>
+    </div> -->
   </div>
 </div>
