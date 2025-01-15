@@ -26,15 +26,6 @@ export class GamesListComponent implements OnInit {
   showModal: boolean = false; //Booleano para mostrar u ocultar el modal de creación de jugadores
   showGameMinutesModal: boolean = false; // Booleano para mostrar u ocultar el modal de asignar minutos
   selectedGame!: Game; // Partido seleccionado
-  gameMinutes: {
-    [playerId: string]: {
-      minutes: number;
-      points: number;
-      fouls: number;
-      freeThrows: { made: number; attempted: number };
-      efficiency: number;
-    };
-  } = {};
 
   // Declarar gameStats
   gameStats: {
@@ -51,10 +42,20 @@ export class GamesListComponent implements OnInit {
   constructor(private playerService: PlayerService, private gamesService: GamesService) {}
 
   ngOnInit(): void {
-    // Obtenemos la lista de jugadores de manera asíncrona
     this.playerService.getPlayers().subscribe(
       (players: Player[]) => {
         this.players = players; // Asignamos los jugadores cuando se reciben
+
+        // Inicializar gameStats para cada jugador
+        this.players.forEach((player) => {
+          this.gameStats[player.id] = {
+            minutes: 0,
+            points: 0,
+            fouls: 0,
+            freeThrows: { made: 0, attempted: 0 },
+            efficiency: 0,
+          };
+        });
       },
       (error) => {
         console.error('Error al obtener los jugadores:', error); // Manejo de errores
@@ -100,18 +101,24 @@ export class GamesListComponent implements OnInit {
       opponent: this.newGame.opponent,
       opponentPoints: this.newGame.opponentPoints,
       ownPoints: this.newGame.ownPoints,
-      playerMinutes: {},
     };
 
-    this.gamesService.addGame(game).then(() => console.log('Partido agregado correctamente')).catch((error) => console.error('Error al agregar el partido:', error));
+    this.gamesService.addGame(game)
+      .then(() => console.log('Partido agregado correctamente'))
+      .catch((error) => console.error('Error al agregar el partido:', error));
 
     this.newGame = {}; // Reinicia el formulario
     this.closeModal();
   }
 
   removeGame(gameId: number) {
-    this.gamesService.removeGame(gameId);
-    this.games = this.games.filter(game => game.id !== gameId);
+    // Convertimos el gameId a string antes de pasarlo al servicio
+    this.gamesService.removeGame(gameId.toString())
+      .then(() => {
+        // Filtramos la lista local de partidos
+        this.games = this.games.filter(game => game.id !== gameId);
+      })
+      .catch(error => console.error('Error al eliminar el partido:', error));
   }
 
   formatDate(date: Date): string {
@@ -173,14 +180,14 @@ export class GamesListComponent implements OnInit {
   openGameMinutesModal(game: Game): void {
     this.selectedGame = game;
 
-    // Inicializar `gameStats` para cada jugador
+    // Inicializar estadísticas para cada jugador
     this.players.forEach((player) => {
       this.playerService.getPlayerById(player.id.toString()).subscribe((playerData) => {
-        if (playerData && playerData.gameMinutes && playerData.gameMinutes[game.id]) {
-          // Cargar las estadísticas específicas de este partido
-          this.gameStats[player.id] = { ...playerData.gameMinutes[game.id] };
+        // Validar si `gameMinutes` y las propiedades existen
+        if (playerData && playerData.gameMinutes && playerData.gameMinutes[game.opponent]) {
+          this.gameStats[player.id] = { ...playerData.gameMinutes[game.opponent] };
         } else {
-          // Si no hay datos para este partido, inicializa con valores predeterminados
+          // Asignar valores por defecto si no existen
           this.gameStats[player.id] = {
             minutes: 0,
             points: 0,
@@ -195,7 +202,6 @@ export class GamesListComponent implements OnInit {
     this.showGameMinutesModal = true;
   }
 
-
   // Método para cerrar el modal de asignación de minutos
   closeGameMinutesModal() {
     this.showGameMinutesModal = false;
@@ -204,61 +210,21 @@ export class GamesListComponent implements OnInit {
   // Método para actualizar los minutos jugados de cada jugador
   updateGameMinutes(): void {
     if (this.selectedGame) {
-      // Validar y asegurar que no haya valores undefined
-      Object.keys(this.gameStats).forEach((playerId) => {
-        const stats = this.gameStats[+playerId];
-        if (!stats) {
-          this.gameStats[+playerId] = {
-            minutes: 0,
-            points: 0,
-            fouls: 0,
-            freeThrows: { made: 0, attempted: 0 },
-            efficiency: 0,
-          };
-        } else {
-          // Asegurarse de que cada campo tenga un valor predeterminado
-          stats.minutes = stats.minutes || 0;
-          stats.points = stats.points || 0;
-          stats.fouls = stats.fouls || 0;
-          stats.freeThrows = stats.freeThrows || { made: 0, attempted: 0 };
-          stats.freeThrows.made = stats.freeThrows.made || 0;
-          stats.freeThrows.attempted = stats.freeThrows.attempted || 0;
-          stats.efficiency = stats.efficiency || 0;
+      this.players.forEach((player) => {
+        const stats = this.gameStats[player.id];
+        if (stats) {
+          this.playerService.updatePlayerGameMinutes(player.id.toString(), this.selectedGame.opponent!, stats).then(() => {
+            console.log(`Estadísticas del jugador ${player.firstName} actualizadas correctamente.`);
+          }).catch((error) => console.error('Error al actualizar estadísticas del jugador:', error));
         }
       });
 
-      // Actualizar las estadísticas en la colección `games`
-      this.selectedGame.playerMinutes = { ...this.gameStats };
-      this.gamesService
-        .updateGame(this.selectedGame.id, this.selectedGame)
-        .then(() => {
-          console.log('Estadísticas actualizadas correctamente en la colección games.');
-
-          // Ahora actualizamos las estadísticas en la colección `players`
-          this.players.forEach((player) => {
-            const stats = this.gameStats[player.id];
-            if (stats) {
-              this.playerService
-                .updatePlayerGameMinutes(player.id.toString(), this.selectedGame.id.toString(), stats)
-                .then(() => {
-                  console.log(`Estadísticas del jugador ${player.firstName} actualizadas en la colección players.`);
-                })
-                .catch((error) => {
-                  console.error(`Error al actualizar estadísticas para ${player.firstName}:`, error);
-                });
-            }
-          });
-
-          this.closeGameMinutesModal();
-        })
-        .catch((error) => {
-          console.error('Error al actualizar estadísticas en la colección games:', error);
-        });
+      this.closeGameMinutesModal();
     }
   }
 
   isWin(game: Game): boolean {
-    if(game.opponent == 'C.B. PUMARIN 2') return false
+    if(game.opponent == 'CB PUMARIN 2') return false
 
     if(game.location == 'PAB. PERCHERA-LA BRAÑA'){
       if(game.ownPoints > game.opponentPoints) return false
@@ -269,14 +235,18 @@ export class GamesListComponent implements OnInit {
     }
   }
 
-  get firstPhaseGames() {
+  get firstPhaseGames(): Game[] {
     const cutoffDate = new Date(2025, 0, 11); // 11/01/2025
-    return this.games.filter(game => new Date(game.date) < cutoffDate);
+    return this.games
+      .filter(game => new Date(game.date) < cutoffDate)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
-  get secondPhaseGames() {
+  get secondPhaseGames(): Game[] {
     const cutoffDate = new Date(2025, 0, 11); // 11/01/2025
-    return this.games.filter(game => new Date(game.date) >= cutoffDate);
+    return this.games
+      .filter(game => new Date(game.date) >= cutoffDate)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
   getFreeThrowsMade(playerId: number): number {
@@ -299,4 +269,9 @@ export class GamesListComponent implements OnInit {
       efficiency: 0,
     };
   }
+
+  get playersSortedByDorsal(): Player[] {
+    return this.players.sort((a, b) => a.dorsal - b.dorsal);
+  }
+
 }

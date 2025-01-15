@@ -17,19 +17,37 @@
 
 <header class="bg-gray-900 text-white w-full">
   <div class="flex items-center justify-between py-4 px-6">
+    <!-- Logo -->
     <div class="flex items-center">
       <img src="images/n1.png" class="h-24 w-24 transition-transform transform hover:scale-110">
     </div>
+
+    <!-- Navegación -->
     <nav class="flex space-x-4">
-      <a href="/players-list" class="text-gray-300 hover:text-blue-300 text-lg hover:text-xl">Jugadores</a>
-      <a href="/assistance" class="text-gray-300 hover:text-blue-300 text-lg hover:text-xl">Asistencia</a>
-      <a href="/games-list" class="text-gray-300 hover:text-blue-300 text-lg hover:text-xl">Partidos</a>
-      <a href="/games-minutes" class="text-gray-300 hover:text-blue-300 text-lg hover:text-xl">Minutos</a>
+      <a routerLink="/players-list" routerLinkActive="text-blue-300" class="text-gray-300 hover:text-blue-300 text-lg">Jugadores</a>
+      <a routerLink="/assistance" routerLinkActive="text-blue-300" class="text-gray-300 hover:text-blue-300 text-lg">Asistencia</a>
+      <a routerLink="/games-list" routerLinkActive="text-blue-300" class="text-gray-300 hover:text-blue-300 text-lg">Partidos</a>
+      <a routerLink="/games-minutes" routerLinkActive="text-blue-300" class="text-gray-300 hover:text-blue-300 text-lg">Minutos</a>
     </nav>
-    <div class="relative flex items-center space-x-4">
-      <button class="relative h-24 w-24">
-        <i class="fas fa-user text-white text-xl transition-transform transform hover:scale-110"></i>
+
+    <!-- Menú desplegable del usuario -->
+    <div class="relative flex items-center">
+      <button (click)="toggleMenu()" class="relative h-12 w-12 rounded-full bg-gray-800 flex items-center justify-center">
+        <i class="fas fa-user text-white text-xl"></i>
       </button>
+
+      <!-- Menú desplegable -->
+      <div *ngIf="menuOpen" class="absolute right-0 mt-2 bg-white text-gray-900 rounded-md shadow-lg w-48">
+        <div class="p-4">
+          <p class="text-sm">Hola, {{ username }}</p>
+        </div>
+        <hr class="border-gray-200">
+        <button (click)="logOut()" class="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
+          Cerrar Sesión
+        </button>
+      </div>
     </div>
   </div>
 </header>
+
+

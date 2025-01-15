@@ -2,88 +2,100 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Player } from '../models/player.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlayerService {
-  private playersCollection;
-  private trainingDaysCollection;
+  constructor(private firestore: AngularFirestore, private authService: AuthService) {}
 
-  constructor(private firestore: AngularFirestore) {
-    this.playersCollection = this.firestore.collection<Player>('players');
-    this.trainingDaysCollection = this.firestore.collection<{ date: string }>('trainingDays');
+  // Obtener la colección de jugadores para el usuario actual
+  private getUserPlayersCollection() {
+    const username = this.authService.getUsername();
+    if (!username) {
+      throw new Error('User is not authenticated or username is missing.');
+    }
+    return this.firestore.collection<Player>(`users/${username}/players`);
   }
 
+  // Obtener todos los jugadores
   getPlayers(): Observable<Player[]> {
-    return this.firestore.collection<Player>('players').valueChanges({ idField: 'id' });
+    return this.getUserPlayersCollection().valueChanges({ idField: 'id' });
   }
 
+  // Obtener un jugador por ID
   getPlayerById(playerId: string): Observable<Player> {
+    const username = this.authService.getUsername();
+    if (!username) {
+      throw new Error('User is not authenticated or username is missing.');
+    }
     return this.firestore
-      .collection('players')
+      .collection(`users/${username}/players`)
       .doc(playerId)
       .valueChanges() as Observable<Player>;
   }
 
-  getTrainingDays(): Observable<{ date: string }[]> {
-    return this.trainingDaysCollection.valueChanges();
+  // Añadir un jugador
+  addPlayer(player: Player): Promise<void> {
+    const collection = this.getUserPlayersCollection();
+    return collection.doc(player.firstName).set(player); // Usa el nombre como ID
   }
 
-  addPlayer(player: Player) {
-    const playerRef = this.playersCollection.doc(player.id.toString());
-    return playerRef.set(player);
+  // Eliminar un jugador
+  removePlayer(playerId: string): Promise<void> {
+    const collection = this.getUserPlayersCollection();
+    return collection.doc(playerId).delete();
   }
 
-  removePlayer(playerId: number) {
-    const playerRef = this.playersCollection.doc(playerId.toString());
-    return playerRef.delete();
+  // Actualizar datos de un jugador
+  updatePlayer(player: Player): Promise<void> {
+    const collection = this.getUserPlayersCollection();
+    return collection.doc(player.firstName).update(player);
   }
 
-  updatePlayer(updatedPlayer: Player) {
-    const playerRef = this.playersCollection.doc(updatedPlayer.id.toString());
-    return playerRef.update(updatedPlayer);
+  // Actualizar la asistencia de un jugador a un entrenamiento
+  updatePlayerAttendance(playerId: string, date: string, attended: boolean): Promise<void> {
+    const username = this.authService.getUsername();
+    if (!username) {
+      throw new Error('User is not authenticated or username is missing.');
+    }
+    return this.firestore
+      .collection(`users/${username}/players`)
+      .doc(playerId)
+      .update({ [`attendance.${date}`]: attended });
   }
 
-  updatePlayerAttendance(playerId: number, date: string, attended: boolean) {
-    const playerRef = this.playersCollection.doc(playerId.toString());
-    return playerRef.update({ [`attendance.${date}`]: attended });
+  // Actualizar el estado de un entrenamiento
+  updateTrainingStatus(date: string): Promise<void> {
+    const username = this.authService.getUsername();
+    if (!username) {
+      throw new Error('User is not authenticated or username is missing.');
+    }
+    return this.firestore.collection(`users/${username}/trainingDays`).doc(date).set({ date });
   }
 
-  updateTrainingStatus(date: string) {
-    const trainingRef = this.trainingDaysCollection.doc(date);
-    return trainingRef.set({ date });
-  }
-
-  updatePlayerGameMinutes(playerId: string, gameId: string, stats: {
+  // Actualizar los minutos de un jugador en un partido
+  updatePlayerGameMinutes(playerId: string, opponent: string, stats: {
     minutes: number;
     points: number;
     fouls: number;
     freeThrows: { made: number; attempted: number };
     efficiency: number;
-  }): Promise<void> {
-    // Asegurarse de que no haya valores undefined en los datos
-    Object.keys(stats).forEach((key) => {
-      if (key === 'minutes') {
-        stats.minutes = stats.minutes || 0;
-      } else if (key === 'points') {
-        stats.points = stats.points || 0;
-      } else if (key === 'fouls') {
-        stats.fouls = stats.fouls || 0;
-      } else if (key === 'freeThrows') {
-        stats.freeThrows = stats.freeThrows || { made: 0, attempted: 0 };
-        stats.freeThrows.made = stats.freeThrows.made || 0;
-        stats.freeThrows.attempted = stats.freeThrows.attempted || 0;
-      } else if (key === 'efficiency') {
-        stats.efficiency = stats.efficiency || 0;
-      }
-    });
+}): Promise<void> {
+    const username = this.authService.getUsername();
+    if (!username) {
+        throw new Error('User is not authenticated or username is missing.');
+    }
 
-    // Actualizar las estadísticas del jugador en Firestore
+    // Reemplazar caracteres especiales en el nombre del oponente
+    const sanitizedOpponent = opponent.replace(/\./g, '').replace(/\s+/g, ' ');
+
     return this.firestore
-      .collection('players')
-      .doc(playerId)
-      .update({ [`gameMinutes.${gameId}`]: stats });
-  }
+        .collection(`users/${username}/players`)
+        .doc(playerId)
+        .update({ [`gameMinutes.${sanitizedOpponent}`]: stats });
+}
+
 
 }

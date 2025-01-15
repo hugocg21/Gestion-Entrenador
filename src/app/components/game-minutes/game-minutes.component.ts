@@ -26,30 +26,36 @@ export class GameMinutesComponent implements OnInit {
   ngOnInit(): void {
     this.loadPlayers();
     this.loadGames();
-    this.loadTeams();
   }
 
   loadPlayers(): void {
     this.playerService.getPlayers().subscribe((players) => {
-      this.players = players;
+      // Ordenar jugadores por posición
+      this.players = players.sort((a, b) => this.comparePositions(a.position, b.position));
       this.renderCharts();
     });
   }
 
   loadGames(): void {
     this.gamesService.getGames().subscribe((games) => {
-      this.games = games;
-    });
-  }
-
-  loadTeams(): void {
-    this.gamesService.getGames().subscribe((games) => {
-      this.teams = games.map((game) => game.opponent);
+      // Ordenar partidos por fecha
+      this.games = games.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      this.teams = this.games.map((game) => game.opponent);
       this.renderCharts();
     });
   }
 
+  comparePositions(posA: string, posB: string): number {
+    const order = ['Base', 'Exterior', 'Interior'];
+    return order.indexOf(posA) - order.indexOf(posB);
+  }
+
   renderCharts(): void {
+    if (this.players.length === 0 || this.games.length === 0) {
+      console.error('No hay datos suficientes para renderizar las gráficas');
+      return;
+    }
+    
     // Limpiar gráficos anteriores
     this.charts.forEach((chart) => chart.destroy());
     this.charts = [];
@@ -58,39 +64,33 @@ export class GameMinutesComponent implements OnInit {
     const gameIds = this.games.map((game) => game.id);
 
     // Estadísticas para todos los equipos
-    const minutesPlayed = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.minutes !== undefined
-        ? player.gameMinutes[gameIds[index]].minutes
+    const minutesPlayed = this.teams.map((team) =>
+      player.gameMinutes && player.gameMinutes[team]?.minutes !== undefined
+        ? player.gameMinutes[team].minutes
         : 0
     );
 
-    const points = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.points !== undefined
-        ? player.gameMinutes[gameIds[index]].points
+    const points = this.teams.map((team) =>
+      player.gameMinutes && player.gameMinutes[team]?.points !== undefined
+        ? player.gameMinutes[team].points
         : 0
     );
 
-    const fouls = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.fouls !== undefined
-        ? player.gameMinutes[gameIds[index]].fouls
+    const efficiency = this.teams.map((team) =>
+      player.gameMinutes && player.gameMinutes[team]?.efficiency !== undefined
+        ? player.gameMinutes[team].efficiency
         : 0
     );
 
-    const efficiency = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.efficiency !== undefined
-        ? player.gameMinutes[gameIds[index]].efficiency
+    const freeThrowsMade = this.teams.map((team) =>
+      player.gameMinutes && player.gameMinutes[team]?.freeThrows?.made !== undefined
+        ? player.gameMinutes[team].freeThrows.made
         : 0
     );
 
-    const freeThrowsMade = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.freeThrows?.made !== undefined
-        ? player.gameMinutes[gameIds[index]].freeThrows.made
-        : 0
-    );
-
-    const freeThrowsAttempted = this.teams.map((_, index) =>
-      player.gameMinutes && player.gameMinutes[gameIds[index]]?.freeThrows?.attempted !== undefined
-        ? player.gameMinutes[gameIds[index]].freeThrows.attempted
+    const freeThrowsAttempted = this.teams.map((team) =>
+      player.gameMinutes && player.gameMinutes[team]?.freeThrows?.attempted !== undefined
+        ? player.gameMinutes[team].freeThrows.attempted
         : 0
     );
 

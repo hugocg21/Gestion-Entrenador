@@ -7,7 +7,7 @@
     </svg>
   </button>
 
-  <!-- Modal para agregar jugadores -->
+  <!-- Modal para agregar partidos -->
   <div *ngIf="showModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md relative">
       <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 focus:outline-none">
@@ -42,7 +42,7 @@
 
   <!-- Primera Fase -->
   <h1 class="text-2xl font-bold text-white mb-4">Fase 1</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-4 w-full">
     <div *ngFor="let game of firstPhaseGames" class="p-8 rounded-2xl shadow-xl relative flex flex-col justify-between" [ngClass]="{ 'bg-green-200': isWin(game), 'bg-red-200': !isWin(game) }">
       <div class="text-center">
         <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ game.opponent }}</h3>
@@ -131,7 +131,7 @@
 
         <!-- Contenedor de la lista de jugadores con scroll -->
         <div class="max-h-80 overflow-y-auto">
-          <div *ngFor="let player of players" class="flex items-center justify-between m-4">
+          <div *ngFor="let player of playersSortedByDorsal" class="flex items-center justify-between m-4">
             <span class="w-1/6">{{ player.firstName }}</span>
             <input type="number" [(ngModel)]="gameStats[player.id].minutes" placeholder="Min" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <input type="number" [(ngModel)]="gameStats[player.id].points" placeholder="Pts" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />

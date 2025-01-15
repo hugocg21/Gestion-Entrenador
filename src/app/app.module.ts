@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AssistanceComponent } from './components/assistance/assistance.component';
 import { FormsModule } from '@angular/forms';
 import { PlayersListComponent } from './components/players-list/players-list.component';
@@ -21,7 +20,6 @@ import { RestorePasswordComponent } from './components/restore-password/restore-
   declarations: [
     AppComponent,
     HeaderComponent,
-    DashboardComponent,
     AssistanceComponent,
     PlayersListComponent,
     GamesListComponent,

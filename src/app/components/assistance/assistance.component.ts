@@ -51,7 +51,7 @@ export class AssistanceComponent implements OnInit {
 
   // Comparar posiciones para ordenar a los jugadores
   comparePositions(posA: string, posB: string): number {
-    const order = ['Base', 'Escolta', 'Alero', 'Ala pivot', 'Pivot', 'Cadete'];
+    const order = ['Base', 'Exterior', 'Interior'];
     return order.indexOf(posA) - order.indexOf(posB);
   }
 
@@ -121,7 +121,8 @@ export class AssistanceComponent implements OnInit {
     const attended = target.checked;
     const formattedDate = this.formatDate(date);
 
-    this.playerService.updatePlayerAttendance(playerId, formattedDate, attended).then(() => {
+    // Convertir playerId a string antes de usarlo en el servicio
+    this.playerService.updatePlayerAttendance(playerId.toString(), formattedDate, attended).then(() => {
       console.log(`Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`);
     }).catch(error => {
       console.error('Error al actualizar la asistencia:', error);
@@ -129,7 +130,6 @@ export class AssistanceComponent implements OnInit {
       target.checked = !attended;
     });
   }
-
 
   // Formatear fecha en formato 'día/mes/año'
   formatDate(date: Date): string {

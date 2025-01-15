@@ -130,7 +130,7 @@ export class PlayersListComponent implements OnInit {
 
   //Método para comparar y ordenar a los jugadores según su posición
   comparePositions(posA: string, posB: string): number {
-    const order = ['Base', 'Escolta', 'Alero', 'Ala pivot', 'Pivot', 'Cadete'];
+    const order = ['Base', 'Exterior', 'Interior'];
     return order.indexOf(posA) - order.indexOf(posB);
   }
 
@@ -170,9 +170,13 @@ export class PlayersListComponent implements OnInit {
 
   //Método para eliminar al jugador
   removePlayer(playerId: number) {
-    //Llamamos al método del service para eliminar el jugador según el playerId
-    this.playerService.removePlayer(playerId);
-    this.players = this.players.filter(player => player.id !== playerId);
+    // Convertimos el ID a string antes de llamar al servicio
+    this.playerService.removePlayer(playerId.toString())
+      .then(() => {
+        // Filtrar la lista local de jugadores después de eliminar
+        this.players = this.players.filter(player => player.id !== playerId);
+      })
+      .catch(error => console.error('Error al eliminar el jugador:', error));
   }
 
   //Método para abrir el explorador de Windows para seleccionar la imagen del jugador
