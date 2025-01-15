@@ -1,0 +1,30 @@
+<div class="p-6 h-full flex flex-col items-center justify-center">
+  <div class="flex flex-col items-center justify-center h-full w-2/3">
+    <h1 class="text-blue-900 font-extrabold text-4xl mb-8">Register</h1>
+    <form (ngSubmit)="register()" class="flex flex-col items-center space-y-4 w-full">
+      <div class="relative w-full flex items-center">
+        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/email.png" alt="Email icon">
+        <input [(ngModel)]="email" name="email" class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full" type="email" placeholder="Email" required>
+      </div>
+      <div class="relative w-full">
+        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/username.png" alt="Username icon">
+        <input [(ngModel)]="username" name="username" class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full" type="text" placeholder="Username" required>
+      </div>
+      <div class="relative w-full">
+        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/password.png" alt="Password icon">
+        <img (click)="changePasswordState()" *ngIf="!password" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/show_password.png" alt="Show password icon">
+        <img (click)="changePasswordState()" *ngIf="password" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/hide_password.png" alt="Hide password icon">
+        <input [(ngModel)]="passwordValue" name="password" class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full" [type]="password ? 'text' : 'password'" placeholder="Password" required>
+      </div>
+      <div class="relative w-full">
+        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/password.png" alt="Repeat Password icon">
+        <img (click)="changeRepeatedPasswordState()" *ngIf="!repeatedPassword" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/show_password.png" alt="Show repeat password icon">
+        <img (click)="changeRepeatedPasswordState()" *ngIf="repeatedPassword" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/hide_password.png" alt="Hide repeat password icon">
+        <input [(ngModel)]="repeatPassword" name="repeatPassword" class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full" [type]="repeatedPassword ? 'text' : 'password'" placeholder="Repeat password" required>
+      </div>
+      <p *ngIf="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</p>
+      <button type="submit" class="bg-blue-900 w-full rounded-xl text-white font-bold p-2 transition-transform transform hover:scale-110">Register</button>
+      <button routerLink="/login" type="button" class="bg-blue-900 w-full rounded-xl text-white font-bold p-2 transition-transform transform hover:scale-110"><span>&#8592;</span> Go back</button>
+    </form>
+  </div>
+</div>
