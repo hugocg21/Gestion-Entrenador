@@ -1,16 +1,20 @@
-import { Component, ElementRef, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   username: string | null = null;
   menuOpen: boolean = false;
   isDarkMode: boolean = false;
+  mobileMenuOpen: boolean = false;
+
+  private themeSubscription!: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -21,14 +25,21 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Obtener el nombre de usuario
     this.username = this.authService.getUsername();
-    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+
+    // Suscripción al servicio de tema oscuro
+    this.themeSubscription = this.themeService.isDarkMode$.subscribe((isDarkMode) => {
       this.isDarkMode = isDarkMode;
     });
   }
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
   toggleDarkMode() {
@@ -42,8 +53,17 @@ export class HeaderComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
+    // Si el clic es fuera del componente, cierra ambos menús
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.menuOpen = false;
+      this.mobileMenuOpen = false;
+    }
+  }
+
+  ngOnDestroy() {
+    // Limpiar suscripciones
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
     }
   }
 }
