@@ -1,61 +1,67 @@
-<div class="p-6 h-full flex flex-col items-center justify-center">
-  <div class="flex flex-col items-center justify-center h-full w-2/3">
-    <h1 class="text-blue-900 font-extrabold text-4xl pb-8">Login</h1>
-    <div class="flex flex-col items-center space-y-4 w-full">
-      <div class="relative w-full">
-        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/username.png"
-          alt="Username icon">
-        <input [(ngModel)]="identifier"
-          class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
-          type="text" placeholder="Username" name="username" required (keydown.enter)="logIn()">
+<div class="bg-slate-950 h-screen w-screen flex items-center justify-center">
+  <!-- Contenedor gris con bordes redondos -->
+  <div class="bg-gray-300 rounded-3xl flex flex-col xl:flex-row justify-between shadow-2xl shadow-gray-600 h-3/4 w-4/5 xl:w-1/2">
+
+    <!-- Contenedor del formulario -->
+    <div class="flex flex-wrap items-center justify-center h-full w-full xl:w-1/2">
+      <div class="p-6 h-full flex flex-col items-center justify-center w-full">
+        <div class="flex flex-col items-center justify-center h-full w-2/3">
+          <h1 class="text-blue-900 font-extrabold text-4xl pb-8">Login</h1>
+          <div class="flex flex-col items-center space-y-4 w-full">
+            <div class="relative w-full">
+              <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/username.png" alt="Username icon">
+              <input [(ngModel)]="identifier"
+                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
+                     type="text" placeholder="Username" name="username" required (keydown.enter)="logIn()">
+            </div>
+            <div class="relative w-full">
+              <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/password.png" alt="Username icon">
+              <img (click)="changePasswordState()" *ngIf="!passwordBoolean"
+                   class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/show_password.png" alt="Show password icon">
+              <img (click)="changePasswordState()" *ngIf="passwordBoolean"
+                   class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/hide_password.png" alt="Hide password icon">
+              <input [(ngModel)]="password"
+                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
+                     [type]="passwordBoolean ? 'text' : 'password'" placeholder="Password" required (keydown.enter)="logIn()">
+            </div>
+            <div *ngIf="errorMessage" class="text-red-500">{{ errorMessage }}</div>
+            <button (click)="logIn()" type="button"
+                    class="bg-blue-900 w-full rounded-xl text-white font-bold p-2 transition-transform transform hover:scale-110">Log In</button>
+          </div>
+
+          <div class="flex items-center justify-around my-4 w-full">
+            <hr class="border-t-2 border-gray-400 w-full">
+            <span class="mx-4 text-gray-400 text-sm">OR</span>
+            <hr class="border-t-2 border-gray-400 w-full">
+          </div>
+
+          <div class="flex flex-col items-center space-y-4 w-full mb-4">
+            <button class="bg-white flex justify-center items-center w-full rounded-xl transition-transform transform hover:scale-110">
+              <img src="images/google.png" class="h-10">
+              <span class="font-bold p-1">Login using Google</span>
+            </button>
+
+            <div class="flex w-full justify-start">
+              <button routerLink="/restore-password"
+                      class="text-sm text-blue-500 hover:underline hover:font-bold transition-transform transform hover:scale-110">Forgot your password</button>
+            </div>
+          </div>
+
+          <div class="w-full space-y-4">
+            <hr class="w-full border-black border-t-2">
+            <div class="flex w-full items-center justify-between">
+              <span class="text-sm">Don't have an account?</span>
+              <button routerLink="/register"
+                      class="bg-white rounded-xl font-bold p-1 w-24 transition-transform transform hover:scale-110">Register</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="relative w-full">
-        <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/password.png"
-          alt="Username icon">
-        <img (click)="changePasswordState()" *ngIf="!passwordBoolean"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/show_password.png"
-          alt="Show password icon">
-        <img (click)="changePasswordState()" *ngIf="passwordBoolean"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/hide_password.png"
-          alt="Hide password icon">
-        <input [(ngModel)]="password"
-          class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
-          [type]="passwordBoolean ? 'text' : 'password'" placeholder="Password" required (keydown.enter)="logIn()">
-      </div>
-      <div *ngIf="errorMessage" class="text-red-500">{{ errorMessage }}</div>
-      <button (click)="logIn()" type="button"
-        class="bg-blue-900 w-full rounded-xl text-white font-bold p-2 transition-transform transform hover:scale-110">Log
-        In</button>
     </div>
 
-    <div class="flex items-center justify-around my-4 w-full">
-      <hr class="border-t-2 border-gray-400 w-full">
-      <span class="mx-4 text-gray-400 text-sm">OR</span>
-      <hr class="border-t-2 border-gray-400 w-full">
-    </div>
-
-    <div class="flex flex-col items-center space-y-4 w-full mb-4">
-      <button
-        class="bg-white flex justify-center items-center w-full rounded-xl transition-transform transform hover:scale-110">
-        <img src="images/google.png" class="h-10">
-        <span class="font-bold p-1">Login using Google</span>
-      </button>
-
-      <div class="flex w-full justify-start">
-        <button routerLink="/restore-password"
-          class="text-sm text-blue-500 hover:underline hover:font-bold transition-transform transform hover:scale-110">Forgot
-          your password</button>
-      </div>
-    </div>
-
-    <div class="w-full space-y-4">
-      <hr class="w-full border-black border-t-2">
-
-      <div class="flex w-full items-center justify-between">
-        <span class="text-sm">Don't have an account?</span>
-        <button routerLink="/register"
-          class="bg-white rounded-xl font-bold p-1 w-24 transition-transform transform hover:scale-110">Register</button>
-      </div>
+    <!-- Contenedor de la imagen -->
+    <div class="hidden xl:flex items-center justify-center flex-wrap w-full xl:w-1/2">
+      <img class="object-cover h-full w-full p-1 rounded-3xl transition-transform transform hover:scale-95" src="images/login.png">
     </div>
   </div>
 </div>
