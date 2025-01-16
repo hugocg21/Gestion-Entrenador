@@ -1,18 +1,8 @@
 <div *ngIf="!loggedIn" class="h-screen flex items-center justify-center bg-slate-950">
-  <div class="bg-gray-300 h-3/4 w-1/2 rounded-3xl flex justify-between shadow-2xl shadow-gray-600">
-    <div class="flex flex-col items-center justify-center w-1/2">
-      <div class="h-full w-full">
-        <router-outlet></router-outlet>
-      </div>
-    </div>
-
-    <div class="h-full w-1/2 flex items-center justify-center">
-      <img class="object-cover h-full w-full p-1 rounded-3xl transition-transform transform hover:scale-95" src="images/login.png">
-    </div>
-  </div>
+  <router-outlet></router-outlet>
 </div>
 
-<div *ngIf="loggedIn" class="h-screen">
+<div *ngIf="loggedIn" class="h-full">
   <app-header></app-header>
   <router-outlet></router-outlet>
 </div>
