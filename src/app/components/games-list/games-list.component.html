@@ -71,6 +71,13 @@
         </svg>
       </button>
     </div>
+
+  </div>
+
+  <!-- Template para cuando no hay jugadores -->
+  <div *ngIf="firstPhaseGames.length === 0" class="text-center text-gray-500 my-8 justify-center flex flex-col items-center w-full">
+    <h2 class="text-2xl font-bold">No hay partidos creados</h2>
+    <p class="mt-2">Haz clic en el botón <span class="font-bold text-blue-600">+</span> para agregar un partido.</p>
   </div>
 
   <!-- Segunda Fase -->
@@ -104,6 +111,13 @@
         </svg>
       </button>
     </div>
+
+    <!-- Template para cuando no hay jugadores -->
+  </div>
+
+  <div *ngIf="secondPhaseGames.length === 0" class="text-center text-gray-500 mt-8 justify-center flex flex-col items-center w-full">
+    <h2 class="text-2xl font-bold">No hay partidos creados</h2>
+    <p class="mt-2">Haz clic en el botón <span class="font-bold text-blue-600">+</span> para agregar un partido.</p>
   </div>
 
   <!-- Modal para asignar los minutos jugados -->

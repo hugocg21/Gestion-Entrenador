@@ -1,4 +1,4 @@
-<div class="p-4">
+<div class="p-4 h-full">
   <!-- Botón para abrir el modal con el ícono de "+" -->
   <button (click)="openModal()" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 fixed bottom-4 right-4">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,8 +44,14 @@
     </button>
   </div>
 
+  <!-- Template para cuando no hay jugadores -->
+  <div *ngIf="playersSorted.length === 0" class="text-center text-gray-500 mt-8 h-full justify-center flex flex-col items-center">
+    <h2 class="text-2xl font-bold">No hay jugadores creados</h2>
+    <p class="mt-2">Haz clic en el botón <span class="font-bold text-blue-600">+</span> para agregar un jugador.</p>
+  </div>
+
   <!-- Lista de jugadores en tarjetas -->
-  <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-8 mt-8">
+  <div *ngIf="playersSorted.length > 0" class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-8 mt-8">
     <div *ngFor="let player of playersSorted" class="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 relative">
       <!-- Pill con la posición del jugador -->
       <div class="absolute top-5 left-4">
