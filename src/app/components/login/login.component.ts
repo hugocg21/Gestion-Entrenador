@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { ThemeService } from '../../services/theme.service';
 
 interface UserData {
   email: string;
@@ -13,7 +14,7 @@ interface UserData {
   selector: 'app-login',
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   identifier: string = ''; // Puede ser correo o nombre de usuario
   password: string = '';
   passwordBoolean: boolean = false;
@@ -24,8 +25,15 @@ export class LoginComponent {
     private afAuth: AngularFireAuth,
     private authService: AuthService,
     private router: Router,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore, private themeService: ThemeService
   ) {}
+
+  ngOnInit() {
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
+    });
+  }
 
   // Cambiar la visibilidad de la contraseña
   changePasswordState() {
@@ -72,5 +80,11 @@ export class LoginComponent {
       this.errorMessage = error.message || 'An error occurred during login.';
       this.invalidCredentials = true;
     }
+  }
+
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
   }
 }

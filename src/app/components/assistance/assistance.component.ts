@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-assistance',
@@ -14,7 +15,7 @@ export class AssistanceComponent implements OnInit {
   months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   trainingDays: { date: Date }[] = []; // Lista que almacena los días de entrenamiento
 
-  constructor(private playerService: PlayerService) {}
+  constructor(private playerService: PlayerService, private themeService: ThemeService) {}
 
   ngOnInit() {
     // Obtener jugadores de forma asincrónica
@@ -24,6 +25,11 @@ export class AssistanceComponent implements OnInit {
 
     // Generamos los días de entrenamiento del mes actual
     this.generateTrainingDays();
+
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
+    });
   }
 
   // Obtener el nombre del mes actual
@@ -167,5 +173,12 @@ export class AssistanceComponent implements OnInit {
 
     // Generar los días de entrenamientos del mes seleccionado
     this.generateTrainingDays();
+  }
+
+
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
   }
 }

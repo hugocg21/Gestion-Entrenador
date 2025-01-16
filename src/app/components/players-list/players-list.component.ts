@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'players-list',
@@ -18,13 +19,18 @@ export class PlayersListComponent implements OnInit {
   currentPlayer: Player | null = null; // Jugador que se está editando
 
   //Constructor que crea un objeto del PlayerService
-  constructor(private playerService: PlayerService) {}
+  constructor(private playerService: PlayerService, private themeService: ThemeService) {}
 
   ngOnInit(): void {
     // Nos suscribimos al Observable que retorna el servicio y asignamos los jugadores
     this.playerService.getPlayers().subscribe(players => {
       this.players = players;
       this.generateTrainingDays(); // Llamamos al método para generar los días de entrenamientos
+    });
+
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
     });
   }
 
@@ -260,5 +266,11 @@ export class PlayersListComponent implements OnInit {
       // Si la dirección es descendente, invertir el resultado de la comparación
       return this.orderDirection === 'asc' ? comparison : -comparison;
     });
+  }
+
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
   }
 }

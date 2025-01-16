@@ -64,7 +64,7 @@
   </div>
 </div> -->
 
-<div class="bg-slate-950 h-screen w-screen flex items-center justify-center">
+<div class="h-screen w-screen flex items-center justify-center" [ngClass]="{ 'bg-gray-900 text-white': isDarkMode, 'bg-white text-gray-900': !isDarkMode }">
 
   <div class="bg-gray-300 rounded-3xl flex justify-between shadow-2xl shadow-gray-600 h-3/4 w-4/5 lg:w-1/2">
 
@@ -76,7 +76,7 @@
             <div class="relative w-full">
               <img class="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/username.png" alt="Username icon">
               <input [(ngModel)]="identifier"
-                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
+                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full text-black"
                      type="text" placeholder="Username" name="username" required (keydown.enter)="logIn()">
             </div>
             <div class="relative w-full">
@@ -86,7 +86,7 @@
               <img (click)="changePasswordState()" *ngIf="passwordBoolean"
                    class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6" src="images/hide_password.png" alt="Hide password icon">
               <input [(ngModel)]="password"
-                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full"
+                     class="p-2 pl-10 rounded-md shadow-inner hover:shadow-lg hover:shadow-blue-900 outline-none w-full text-black"
                      [type]="passwordBoolean ? 'text' : 'password'" placeholder="Password" required (keydown.enter)="logIn()">
             </div>
             <div *ngIf="errorMessage" class="text-red-500">{{ errorMessage }}</div>
@@ -103,7 +103,7 @@
           <div class="flex flex-col items-center space-y-4 w-full mb-4">
             <button class="bg-white flex justify-center items-center w-full rounded-xl transition-transform transform hover:scale-110">
               <img src="images/google.png" class="h-10">
-              <span class="font-bold p-1">Login using Google</span>
+              <span class="font-bold p-1 text-black">Login using Google</span>
             </button>
 
             <div class="flex w-full justify-start">
@@ -115,11 +115,22 @@
           <div class="w-full space-y-4">
             <hr class="w-full border-black border-t-2">
             <div class="flex w-full items-center justify-between">
-              <span class="text-sm">Don't have an account?</span>
-              <button routerLink="/register"
-                      class="bg-white rounded-xl font-bold p-1 w-24 transition-transform transform hover:scale-110">Register</button>
+              <span class="text-sm text-black">Don't have an account?</span>
+              <button routerLink="/register" class="bg-white rounded-xl font-bold p-1 w-24 transition-transform transform hover:scale-110 text-black">Register</button>
             </div>
           </div>
+
+          <label class="inline-flex items-center cursor-pointer mt-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2m-14 0H3m16.364-7.364l-1.414 1.414m-12.728 0l1.414-1.414m12.728 12.728l-1.414-1.414m-12.728 0l1.414 1.414M12 8a4 4 0 110 8 4 4 0 010-8z" />
+            </svg>
+            <input type="checkbox" class="sr-only peer" [checked]="isDarkMode">
+            <div (click)="toggleDarkMode()" class="mx-1 relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            </svg>
+          </label>
+
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { PlayerService } from '../../services/player.service';
 import { GamesService } from '../../services/games.service';
 import { Game } from '../../models/game.model';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { ThemeService } from '../../services/theme.service';
 
 Chart.register(ChartDataLabels);
 Chart.register(...registerables);
@@ -21,11 +22,16 @@ export class GameMinutesComponent implements OnInit {
   charts: Chart[] = [];
   averageMinutes: number = 0;
 
-  constructor(private playerService: PlayerService, private gamesService: GamesService) {}
+  constructor(private playerService: PlayerService, private gamesService: GamesService, private themeService: ThemeService) {}
 
   ngOnInit(): void {
     this.loadPlayers();
     this.loadGames();
+
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
+    });
   }
 
   loadPlayers(): void {
@@ -55,7 +61,7 @@ export class GameMinutesComponent implements OnInit {
       console.error('No hay datos suficientes para renderizar las gráficas');
       return;
     }
-    
+
     // Limpiar gráficos anteriores
     this.charts.forEach((chart) => chart.destroy());
     this.charts = [];
@@ -226,5 +232,11 @@ export class GameMinutesComponent implements OnInit {
       this.currentPlayerIndex--;
       this.renderCharts();
     }
+  }
+
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
   }
 }

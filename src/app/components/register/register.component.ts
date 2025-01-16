@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   email: string = '';
   username: string = '';
   passwordValue: string = '';
@@ -16,7 +17,14 @@ export class RegisterComponent {
   repeatedPassword: boolean = false;
   errorMessage: string = '';
 
-  constructor(private afAuth: AngularFireAuth, private router: Router, private firestore: AngularFirestore) {}
+  constructor(private afAuth: AngularFireAuth, private router: Router, private firestore: AngularFirestore, private themeService: ThemeService) {}
+
+  ngOnInit() {
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
+    });
+  }
 
   changePasswordState() {
     this.password = !this.password;
@@ -61,5 +69,11 @@ export class RegisterComponent {
     } catch (error: any) {
       this.errorMessage = error.message || 'An error occurred during registration.';
     }
+  }
+
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
   }
 }

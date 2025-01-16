@@ -4,6 +4,7 @@ import { Player } from '../../models/player.model';
 import { GamesService } from '../../services/games.service';
 import { Game } from '../../models/game.model';
 import { Observable } from 'rxjs'; // Necesario para Observable
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'games-list',
@@ -39,7 +40,7 @@ export class GamesListComponent implements OnInit {
   } = {};
 
   //Constructor que crea un objeto del PlayerService
-  constructor(private playerService: PlayerService, private gamesService: GamesService) {}
+  constructor(private playerService: PlayerService, private gamesService: GamesService, private themeService: ThemeService) {}
 
   ngOnInit(): void {
     this.playerService.getPlayers().subscribe(
@@ -71,6 +72,11 @@ export class GamesListComponent implements OnInit {
         console.error('Error al cargar los partidos:', error);
       }
     );
+
+    // Escuchar los cambios en el modo oscuro
+    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
+      this.isDarkMode = isDarkMode;
+    });
   }
 
   // Método para ordenar los partidos por fecha
@@ -274,4 +280,9 @@ export class GamesListComponent implements OnInit {
     return this.players.sort((a, b) => a.dorsal - b.dorsal);
   }
 
+  isDarkMode: boolean = false;
+
+  toggleDarkMode() {
+    this.themeService.toggleDarkMode(); // Cambiar el tema
+  }
 }
