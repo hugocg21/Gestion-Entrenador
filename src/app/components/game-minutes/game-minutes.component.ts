@@ -22,6 +22,8 @@ export class GameMinutesComponent implements OnInit {
   charts: Chart[] = [];
   averageMinutes: number = 0;
 
+  selectedPhase: string = 'all'; // 'all', 'first', 'second'
+
   constructor(private playerService: PlayerService, private gamesService: GamesService, private themeService: ThemeService) {}
 
   ngOnInit(): void {
@@ -62,39 +64,51 @@ export class GameMinutesComponent implements OnInit {
       return;
     }
 
+    // Filtrar partidos según la fase seleccionada
+    let filteredGames: Game[];
+    const cutoffDate = new Date(2025, 0, 11); // 11 de enero de 2025
+
+    if (this.selectedPhase === 'first') {
+      filteredGames = this.games.filter(game => new Date(game.date) < cutoffDate);
+    } else if (this.selectedPhase === 'second') {
+      filteredGames = this.games.filter(game => new Date(game.date) >= cutoffDate);
+    } else {
+      filteredGames = this.games;
+    }
+
+    this.teams = filteredGames.map(game => game.opponent);
+
     // Limpiar gráficos anteriores
-    this.charts.forEach((chart) => chart.destroy());
+    this.charts.forEach(chart => chart.destroy());
     this.charts = [];
 
     const player = this.players[this.currentPlayerIndex];
-    const gameIds = this.games.map((game) => game.id);
 
-    // Estadísticas para todos los equipos
-    const minutesPlayed = this.teams.map((team) =>
+    const minutesPlayed = this.teams.map(team =>
       player.gameMinutes && player.gameMinutes[team]?.minutes !== undefined
         ? player.gameMinutes[team].minutes
         : 0
     );
 
-    const points = this.teams.map((team) =>
+    const points = this.teams.map(team =>
       player.gameMinutes && player.gameMinutes[team]?.points !== undefined
         ? player.gameMinutes[team].points
         : 0
     );
 
-    const efficiency = this.teams.map((team) =>
+    const efficiency = this.teams.map(team =>
       player.gameMinutes && player.gameMinutes[team]?.efficiency !== undefined
         ? player.gameMinutes[team].efficiency
         : 0
     );
 
-    const freeThrowsMade = this.teams.map((team) =>
+    const freeThrowsMade = this.teams.map(team =>
       player.gameMinutes && player.gameMinutes[team]?.freeThrows?.made !== undefined
         ? player.gameMinutes[team].freeThrows.made
         : 0
     );
 
-    const freeThrowsAttempted = this.teams.map((team) =>
+    const freeThrowsAttempted = this.teams.map(team =>
       player.gameMinutes && player.gameMinutes[team]?.freeThrows?.attempted !== undefined
         ? player.gameMinutes[team].freeThrows.attempted
         : 0
