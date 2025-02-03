@@ -146,16 +146,16 @@
         <!-- Contenedor de la lista de jugadores con scroll -->
         <div class="max-h-80 overflow-y-auto">
           <div *ngFor="let player of playersSortedByDorsal" class="flex items-center justify-between m-4">
-            <span class="w-1/6">{{ player.firstName }}</span>
-            <input type="number" [(ngModel)]="gameStats[player.id].minutes" placeholder="Min" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <input type="number" [(ngModel)]="gameStats[player.id].points" placeholder="Pts" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <input type="number" [(ngModel)]="gameStats[player.id].fouls" placeholder="Faltas" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <span class="w-1/6 text-black">{{ player.firstName }}</span>
+            <input type="number" [(ngModel)]="gameStats[player.id].minutes" placeholder="Min" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="number" [(ngModel)]="gameStats[player.id].points" placeholder="Pts" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="number" [(ngModel)]="gameStats[player.id].fouls" placeholder="Faltas" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <div class="w-1/6 flex items-center space-x-2">
-              <input type="number" [(ngModel)]="gameStats[player.id].freeThrows.made" placeholder="Metidos" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <span>/</span>
-              <input type="number" [(ngModel)]="gameStats[player.id].freeThrows.attempted" placeholder="Intentados" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input type="number" [(ngModel)]="gameStats[player.id].freeThrows.made" placeholder="Metidos" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <span class="text-black">/</span>
+              <input type="number" [(ngModel)]="gameStats[player.id].freeThrows.attempted" placeholder="Intentados" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
-            <input type="number" [(ngModel)]="gameStats[player.id].efficiency" placeholder="Efficiency" class="p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="number" [(ngModel)]="gameStats[player.id].efficiency" placeholder="Efficiency" class="text-black p-2 mx-1 border border-gray-300 rounded-lg w-1/6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
