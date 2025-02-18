@@ -81,7 +81,8 @@ export class AssistanceComponent implements OnInit {
       new Date(2024, 11, 31), // 31 de diciembre
       new Date(2025, 0, 2), // 2 de enero
       new Date(2025, 0, 3), // 3 de enero
-      new Date(2025, 0, 17) // 17 de enero
+      new Date(2025, 0, 17), // 17 de enero
+      new Date(2025, 1, 14), // 14 de febrero
     ];
 
     if (currentMonth === 8 && currentYear === 2024) {
