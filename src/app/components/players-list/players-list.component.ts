@@ -122,6 +122,15 @@ export class PlayersListComponent implements OnInit {
         }
       }
 
+      // Regla específica para Jaime
+      if (player.firstName === 'Jaime' && dayOfWeek === 5) {
+        return false; // Excluir los viernes
+      }
+
+      if (player.firstName === 'Pesca' && dayOfWeek === 5 && dayDate >= new Date(2025, 0, 24)) {
+        return false; // Excluir los viernes desde el 24 de enero
+      }
+
       return true; // Si pasa todas las reglas
     }).length;
   }
