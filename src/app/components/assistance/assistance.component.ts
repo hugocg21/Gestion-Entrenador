@@ -88,6 +88,8 @@ export class AssistanceComponent implements OnInit {
       new Date(2025, 2, 4), // 4 de marzo
       new Date(2025, 2, 28), // 28 de marzo
       new Date(2025, 3, 1), // 1 de abril
+      new Date(2025, 3, 4), // 4 de abril
+      new Date(2025, 3, 11), // 11 de abril
       new Date(2025, 3, 15), // 15 de abril
       new Date(2025, 3, 17), // 17 de abril
       new Date(2025, 3, 18), // 18 de abril
