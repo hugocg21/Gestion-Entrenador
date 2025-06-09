@@ -87,4 +87,15 @@ export class LoginComponent implements OnInit {
   toggleDarkMode() {
     this.themeService.toggleDarkMode(); // Cambiar el tema
   }
+
+  async logInWithGoogle() {
+  try {
+    await this.authService.loginWithGoogle();
+    await this.authService.fetchUsername(); // Si quieres buscar nombre de usuario
+    this.router.navigate(['/players-list']);
+  } catch (error: any) {
+    this.errorMessage = error.message || 'An error occurred with Google login.';
+    this.invalidCredentials = true;
+  }
+}
 }

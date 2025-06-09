@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import firebase from 'firebase/compat/app'; // Asegúrate de importar esto
 
 @Injectable({
   providedIn: 'root',
@@ -117,4 +118,8 @@ export class AuthService {
       }
     }
   }
+
+  loginWithGoogle() {
+  return this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+}
 }
