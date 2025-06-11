@@ -7,7 +7,6 @@ import { GameMinutesComponent } from './components/game-minutes/game-minutes.com
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { RestorePasswordComponent } from './components/restore-password/restore-password.component';
-import { GamesDashboardComponent } from './components/games-dashboard/games-dashboard.component';
 import { noAuthGuard } from './guards/no-auth.guard';
 
 const routes: Routes = [
