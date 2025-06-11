@@ -1,21 +1,20 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
-import { Auth } from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 
 export const noAuthGuard: CanActivateFn = () => {
-  const auth = inject(Auth);
+  const auth = inject(AngularFireAuth);
   const router = inject(Router);
 
   return new Promise<boolean>((resolve) => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      unsubscribe();
-
+    const sub = auth.authState.subscribe((user) => {
+      sub.unsubscribe();
       if (user) {
-        router.navigate(['/players-list']); // 👈 Redirige si ya está logueado
+        router.navigate(['/select-league']);
         resolve(false);
       } else {
-        resolve(true); // ✅ Permite acceso si no está autenticado
+        resolve(true);
       }
     });
   });
