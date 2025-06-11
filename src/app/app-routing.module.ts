@@ -8,17 +8,40 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { RestorePasswordComponent } from './components/restore-password/restore-password.component';
 import { noAuthGuard } from './guards/no-auth.guard';
+import { authGuard } from './guards/auth.guard'; // 👈 Añadir esto
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'assistance', component: AssistanceComponent },
-  { path: 'players-list', component: PlayersListComponent },
-  { path: 'games-list', component: GamesListComponent },
-  { path: 'games-minutes', component: GameMinutesComponent },
+
+  // Rutas públicas
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'restore-password', component: RestorePasswordComponent },
-  { path: '**', redirectTo: 'login' }, // Redirigir a login por defecto
+
+  // Rutas protegidas
+  {
+    path: 'assistance',
+    component: AssistanceComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'players-list',
+    component: PlayersListComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'games-list',
+    component: GamesListComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'games-minutes',
+    component: GameMinutesComponent,
+    canActivate: [authGuard],
+  },
+
+  // Fallback
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({
