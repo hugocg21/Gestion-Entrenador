@@ -2,10 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
 import { ThemeService } from '../../services/theme.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'players-list',
-  templateUrl: './players-list.component.html'
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './players-list.component.html',
 })
 export class PlayersListComponent implements OnInit {
   players: Player[] = []; //Lista de jugadores con objetos Player
@@ -19,11 +23,14 @@ export class PlayersListComponent implements OnInit {
   currentPlayer: Player | null = null; // Jugador que se está editando
 
   //Constructor que crea un objeto del PlayerService
-  constructor(private playerService: PlayerService, private themeService: ThemeService) {}
+  constructor(
+    private playerService: PlayerService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit(): void {
     // Nos suscribimos al Observable que retorna el servicio y asignamos los jugadores
-    this.playerService.getPlayers().subscribe(players => {
+    this.playerService.getPlayers().subscribe((players) => {
       this.players = players;
       this.generateTrainingDays(); // Llamamos al método para generar los días de entrenamientos
     });
@@ -36,9 +43,9 @@ export class PlayersListComponent implements OnInit {
 
   generateTrainingDays() {
     this.trainingDays = [];
-    const startDate = new Date(2024, 8, 5); // Fecha de inicio de entrenamientos (5 de septiembre de 2024)
-    const today = new Date(); // Fecha actual
-    let currentDate = new Date(startDate); // Empezamos desde la fecha de inicio
+    const startDate = new Date(2024, 8, 5); // 5 septiembre 2024
+    const endDate = new Date(2025, 5, 13); // 13 junio 2025 (último día de entreno)
+    let currentDate = new Date(startDate);
 
     // Fechas excluidas
     const excludedDates = [
@@ -74,46 +81,60 @@ export class PlayersListComponent implements OnInit {
       new Date(2025, 5, 3), // 3 de junio
     ];
 
-    while (currentDate <= today) {
-      const dayOfWeek = currentDate.getDay(); // Día de la semana (0 = domingo, 1 = lunes, ..., 6 = sábado)
+    while (currentDate <= endDate) {
+      const dayOfWeek = currentDate.getDay();
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
 
       // Reglas de entrenamiento
       if (
-        (currentMonth === 8 && (dayOfWeek === 2 || dayOfWeek === 4) && currentYear === 2024) || // Septiembre: martes y jueves
-        (currentMonth >= 9 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && currentYear === 2024) || // Octubre en adelante: martes, jueves y viernes
-        (currentMonth >= 0 && (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && currentYear === 2025) // Octubre en adelante: martes, jueves y viernes
+        (currentMonth === 8 &&
+          (dayOfWeek === 2 || dayOfWeek === 4) &&
+          currentYear === 2024) ||
+        (currentMonth >= 9 &&
+          (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) &&
+          currentYear === 2024) ||
+        (currentMonth >= 0 &&
+          (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) &&
+          currentYear === 2025)
       ) {
-        // Excluimos las fechas específicas
-        if (!excludedDates.some(d => d.getTime() === currentDate.getTime())) {
+        if (!excludedDates.some((d) => d.getTime() === currentDate.getTime())) {
           this.trainingDays.push({ date: new Date(currentDate) });
         }
       }
 
-      currentDate.setDate(currentDate.getDate() + 1); // Avanzamos al siguiente día
+      currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    // Agregar días específicos de entrenamiento
-    const specificDates = [new Date(2025, 0, 8)]; // Agregamos el 8 de enero de 2025
-    specificDates.forEach(specificDate => {
-      if (!this.trainingDays.some(day => day.date.getTime() === specificDate.getTime())) {
+    const specificDates = [new Date(2025, 0, 8)];
+    specificDates.forEach((specificDate) => {
+      if (
+        !this.trainingDays.some(
+          (day) => day.date.getTime() === specificDate.getTime()
+        ) &&
+        specificDate <= endDate
+      ) {
         this.trainingDays.push({ date: specificDate });
       }
     });
 
-    console.log('Training days:', this.trainingDays.map(day => this.formatDate(day.date)));
+    console.log(
+      'Training days:',
+      this.trainingDays.map((day) => this.formatDate(day.date))
+    );
   }
 
   //Método para obtener los entrenamientos a los que ha asistido cada jugador
   getPlayerAttendance(player: Player): number {
     if (!player.attendance) return 0; // Si no hay datos, retorna 0
-    return Object.values(player.attendance).filter(attended => attended === true).length;
+    return Object.values(player.attendance).filter(
+      (attended) => attended === true
+    ).length;
   }
 
   // Método modificado para obtener el total de entrenamientos aplicable a cada jugador individualmente
   getTotalTrainings(player: Player): number {
-    return this.trainingDays.filter(day => {
+    return this.trainingDays.filter((day) => {
       const dayDate = new Date(day.date);
       const dayOfWeek = dayDate.getDay();
 
@@ -140,7 +161,11 @@ export class PlayersListComponent implements OnInit {
         return false; // Excluir los viernes
       }
 
-      if (player.firstName === 'Pesca' && dayOfWeek === 5 && dayDate >= new Date(2025, 0, 24)) {
+      if (
+        player.firstName === 'Pesca' &&
+        dayOfWeek === 5 &&
+        dayDate >= new Date(2025, 0, 24)
+      ) {
         return false; // Excluir los viernes desde el 24 de enero
       }
 
@@ -152,7 +177,9 @@ export class PlayersListComponent implements OnInit {
   calculateAttendancePercentage(player: Player): number {
     const totalTrainings = this.getTotalTrainings(player);
     const attendance = this.getPlayerAttendance(player);
-    return totalTrainings > 0 ? Math.round((attendance / totalTrainings) * 100) : 0;
+    return totalTrainings > 0
+      ? Math.round((attendance / totalTrainings) * 100)
+      : 0;
   }
 
   //Método para ordenar a los jugadores según sus posiciones
@@ -181,13 +208,13 @@ export class PlayersListComponent implements OnInit {
       // Crear un jugador nuevo
       const newId = Date.now();
       const player: Player = {
-        id: newId,
+        id: newId.toString(),
         firstName: this.newPlayer.firstName!,
         position: this.newPlayer.position!,
         dorsal: this.newPlayer.dorsal!,
         image: this.imagePreview || null,
         attendance: {},
-        gameMinutes: {}
+        gameMinutes: {},
       };
 
       this.playerService.addPlayer(player);
@@ -202,14 +229,17 @@ export class PlayersListComponent implements OnInit {
   }
 
   //Método para eliminar al jugador
-  removePlayer(playerId: number) {
+  removePlayer(playerId: string) {
     // Convertimos el ID a string antes de llamar al servicio
-    this.playerService.removePlayer(playerId.toString())
+    this.playerService
+      .removePlayer(playerId.toString())
       .then(() => {
         // Filtrar la lista local de jugadores después de eliminar
-        this.players = this.players.filter(player => player.id !== playerId);
+        this.players = this.players.filter(
+          (player) => player.id !== playerId.toString()
+        );
       })
-      .catch(error => console.error('Error al eliminar el jugador:', error));
+      .catch((error) => console.error('Error al eliminar el jugador:', error));
   }
 
   //Método para abrir el explorador de Windows para seleccionar la imagen del jugador
@@ -241,7 +271,7 @@ export class PlayersListComponent implements OnInit {
       this.newPlayer = {
         firstName: playerToEdit.firstName,
         position: playerToEdit.position,
-        dorsal: playerToEdit.dorsal
+        dorsal: playerToEdit.dorsal,
       };
       this.imagePreview = playerToEdit.image;
     } else {
@@ -259,7 +289,7 @@ export class PlayersListComponent implements OnInit {
   }
 
   // Variables para el orden
-  orderCategory: string = 'position';  // Categoría de ordenación por defecto
+  orderCategory: string = 'position'; // Categoría de ordenación por defecto
   orderDirection: 'asc' | 'desc' = 'asc'; // Dirección del orden (ascendente por defecto)
 
   // Método para cambiar la categoría de ordenación
@@ -281,13 +311,15 @@ export class PlayersListComponent implements OnInit {
       let comparison = 0;
       // Compara según la categoría
       if (this.orderCategory === 'attendance') {
-        comparison = this.calculateAttendancePercentage(a) - this.calculateAttendancePercentage(b);
+        comparison =
+          this.calculateAttendancePercentage(a) -
+          this.calculateAttendancePercentage(b);
       } else if (this.orderCategory === 'name') {
         comparison = a.firstName.localeCompare(b.firstName);
       } else if (this.orderCategory === 'dorsal') {
         comparison = a.dorsal - b.dorsal;
       } else if (this.orderCategory === 'position') {
-        comparison =  this.comparePositions(a.position, b.position);
+        comparison = this.comparePositions(a.position, b.position);
       }
 
       // Si la dirección es descendente, invertir el resultado de la comparación
@@ -299,5 +331,44 @@ export class PlayersListComponent implements OnInit {
 
   toggleDarkMode() {
     this.themeService.toggleDarkMode(); // Cambiar el tema
+  }
+
+  async exportarJugadores() {
+    const players = await this.playerService.exportAllPlayers();
+
+    const blob = new Blob([JSON.stringify(players, null, 2)], {
+      type: 'application/json',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'respaldo_jugadores.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  importarJugadores(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const data = JSON.parse(reader.result as string) as Player[];
+        for (const player of data) {
+          // Verifica que no esté ya en la lista actual (por ID)
+          const exists = this.players.some((p) => p.id === player.id);
+          if (!exists) {
+            await this.playerService.addPlayer(player);
+          }
+        }
+        alert('Jugadores importados correctamente');
+      } catch (error) {
+        console.error('Error al importar:', error);
+        alert('Hubo un error al importar el archivo.');
+      }
+    };
+    reader.readAsText(file);
   }
 }

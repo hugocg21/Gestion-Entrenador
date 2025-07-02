@@ -1,0 +1,142 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-slate-800 rounded shadow-lg w-[95%] max-w-6xl max-h-[90vh] overflow-y-auto p-6 relative">
+    <!-- Cerrar -->
+    <button (click)="cerrarModal()"
+      class="absolute top-2 right-3 text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white text-lg">
+      ✖
+    </button>
+
+    <!-- Título -->
+    <h2 class="text-lg sm:text-xl font-bold mb-4 text-slate-800 dark:text-white">
+      📋 Estadísticas de {{ jugador.nombre }}
+    </h2>
+
+    <!-- Botones de vista -->
+    <div class="flex justify-end gap-2 mb-4">
+      <button (click)="cambiarVista('tabla')" [ngClass]="{
+          'bg-blue-600 text-white': modoVista === 'tabla',
+          'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white': modoVista !== 'tabla'
+        }" class="px-3 py-1 text-sm rounded hover:bg-blue-700 dark:hover:bg-blue-500 transition">
+        📋 Tabla
+      </button>
+
+      <button (click)="cambiarVista('grafico')" [ngClass]="{
+          'bg-blue-600 text-white': modoVista === 'grafico',
+          'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white': modoVista !== 'grafico'
+        }" class="px-3 py-1 text-sm rounded hover:bg-blue-700 dark:hover:bg-blue-500 transition">
+        📈 Gráficas
+      </button>
+    </div>
+
+    <!-- Vista TABLA -->
+    <div *ngIf="modoVista === 'tabla'" class="overflow-x-auto">
+      <table class="min-w-[800px] w-full text-xs sm:text-sm border border-collapse shadow-sm">
+        <thead class="bg-gray-100 dark:bg-slate-700 dark:text-white">
+          <tr>
+            <th class="border p-2 text-center dark:border-slate-600">Rival</th>
+            <th class="border p-2 text-center dark:border-slate-600">Fecha</th>
+            <th class="border p-2 text-center dark:border-slate-600">PTS</th>
+            <th class="border p-2 text-center dark:border-slate-600">T2</th>
+            <th class="border p-2 text-center dark:border-slate-600">T3</th>
+            <th class="border p-2 text-center dark:border-slate-600">TL (A/I)</th>
+            <th class="border p-2 text-center dark:border-slate-600">%</th>
+            <th class="border p-2 text-center dark:border-slate-600">MIN</th>
+            <th class="border p-2 text-center dark:border-slate-600">F</th>
+            <th class="border p-2 text-center dark:border-slate-600">VAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let partido of partidos || []"
+            class="hover:bg-gray-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white even:bg-slate-50 dark:even:bg-slate-800">
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.rival }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.fecha }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.puntos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.tiros_2p }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.triples }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.tiros_libres }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularPorcentaje(partido.tiros_libres) }}%
+            </td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.minutos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ partido.faltas_cometidas }}</td>
+            <td class="border p-2 text-center dark:border-slate-600" [ngClass]="{ 'bg-yellow-300 text-black font-bold': partido.esMVP }">
+              {{ partido.valoracion }} <span *ngIf="partido.esMVP">🏆</span>
+            </td>
+          </tr>
+
+          <!-- Totales -->
+          <tr class="bg-gray-100 dark:bg-slate-700 font-semibold text-slate-800 dark:text-white">
+            <td colspan="2" class="border p-2 text-center dark:border-slate-600">Totales</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.puntos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.tiros_2p }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.triples }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.tl }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">
+              {{ calcularTotales(partidos)?.porcentaje_tl }}%
+            </td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_minutos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.faltas_cometidas }}
+            </td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.valoracion }}</td>
+          </tr>
+
+          <!-- Promedios -->
+          <tr class="bg-slate-200 dark:bg-slate-800 font-semibold text-slate-800 dark:text-white">
+            <td colspan="2" class="border p-2 text-center dark:border-slate-600">Media</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_puntos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_t2 }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_t3 }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_tl_metidos }}/{{
+              calcularTotales(partidos)?.prom_tl_tirados }}
+            </td>
+            <td class="border p-2 text-center dark:border-slate-600">
+              {{ calcularTotales(partidos)?.porcentaje_tl }}%
+            </td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_minutos }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_faltas }}</td>
+            <td class="border p-2 text-center dark:border-slate-600">{{ calcularTotales(partidos)?.prom_valoracion }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Vista GRÁFICO -->
+    <div *ngIf="modoVista === 'grafico'"
+      class="bg-white dark:bg-slate-800 rounded shadow p-4 text-slate-800 dark:text-white">
+
+      <!-- Tipo de gráfico -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button (click)="cambiarTipoGrafico('line')" [ngClass]="{
+            'bg-blue-600 text-white': tipoGrafico === 'line',
+            'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white': tipoGrafico !== 'line'
+          }" class="px-3 py-1 text-sm rounded hover:bg-blue-700 dark:hover:bg-blue-500 transition">
+          📈 Línea
+        </button>
+        <button (click)="cambiarTipoGrafico('bar')" [ngClass]="{
+            'bg-blue-600 text-white': tipoGrafico === 'bar',
+            'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white': tipoGrafico !== 'bar'
+          }" class="px-3 py-1 text-sm rounded hover:bg-blue-700 dark:hover:bg-blue-500 transition">
+          📊 Barras
+        </button>
+      </div>
+
+      <!-- Botones métricas con íconos -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button *ngFor="let metrica of metricas" (click)="cambiarMetrica(metrica.clave)" [ngClass]="{
+            'bg-blue-600 text-white': metricaSeleccionada === metrica.clave,
+            'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white': metricaSeleccionada !== metrica.clave
+          }"
+          class="px-3 py-1 text-sm rounded hover:bg-blue-700 dark:hover:bg-blue-500 transition flex items-center gap-1">
+          <span>{{ metrica.icon }}</span>
+          <span>{{ metrica.label }}</span>
+        </button>
+      </div>
+
+      <!-- Gráfico -->
+      <!-- <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+        [title]="chartOptions.title" [tooltip]="tooltipOptions" [dataLabels]="dataLabelsOptions">
+      </apx-chart> -->
+
+    </div>
+  </div>
+</div>

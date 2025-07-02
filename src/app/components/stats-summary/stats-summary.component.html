@@ -1,0 +1,112 @@
+<div
+  class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-4 sm:p-6 md:p-8 mx-auto space-y-10 min-h-screen transition-colors duration-300">
+  <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-sm p-4 sm:p-6">
+    <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white mb-4">
+      📊 Estadísticas acumuladas
+    </h2>
+
+    <input type="text" [ngModel]="filtroNombre()" (ngModelChange)="filtroNombre.set($event)"
+      placeholder="🔎 Buscar jugador..."
+      class="w-full mb-4 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded text-sm shadow-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-300 focus:ring focus:ring-blue-500" />
+
+    <div *ngIf="resumenJugadores.length === 0" class="text-center py-4">
+      <p class="text-center text-lg text-gray-400 italic mt-6">No hay partidos aún. Sube uno para empezar 📊</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table *ngIf="resumenJugadores.length > 0"
+        class="min-w-[1000px] w-full border text-xs sm:text-sm shadow-sm transition-all duration-500 ease-in-out">
+        <thead class="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white">
+          <tr>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('numero')">Nº <span
+                *ngIf="ordenActual() === 'numero'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('nombre')">Jugador <span
+                *ngIf="ordenActual() === 'nombre'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('partidos')">PJ <span
+                *ngIf="ordenActual() === 'partidos'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('puntos')">PTS <span
+                *ngIf="ordenActual() === 'puntos'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_puntos')">AVG <span
+                *ngIf="ordenActual() === 'prom_puntos'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('tiros_2p')">T2 <span
+                *ngIf="ordenActual() === 'tiros_2p'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_tiros_2p')">AVG <span
+                *ngIf="ordenActual() === 'prom_tiros_2p'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('triples')">T3 <span
+                *ngIf="ordenActual() === 'triples'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_triples')">AVG <span
+                *ngIf="ordenActual() === 'prom_triples'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('minutos_totales')">MIN T <span
+                *ngIf="ordenActual() === 'minutos_totales'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_minutos')">AVG <span
+                *ngIf="ordenActual() === 'prom_minutos'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('tl_metidos')">TL <span
+                *ngIf="ordenActual() === 'tl_metidos'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('tl_porcentaje')">%</th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('faltas_cometidas')">F <span
+                *ngIf="ordenActual() === 'faltas_cometidas'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_faltas')">AVG</th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('valoracion')">VAL <span
+                *ngIf="ordenActual() === 'valoracion'">{{ ordenAscendente() ? '🔼' : '🔽' }}</span></th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('prom_valoracion')">AVG</th>
+            <th class="border px-2 py-1 cursor-pointer" (click)="ordenarPor('mvps')">MVPs</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let j of resumenJugadores | filterByNombre: filtroNombre()"
+            class="hover:bg-slate-50 dark:hover:bg-slate-600 transition text-slate-800 dark:text-white">
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.numero }}</td>
+            <td
+              class="border px-2 py-1 text-blue-600 dark:text-blue-400 hover:underline cursor-pointer dark:border-slate-600"
+              (click)="abrirDetalle(j)">
+              {{ j.nombre }}
+            </td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.partidos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.puntos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_puntos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.tiros_2p }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_tiros_2p }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.triples }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_triples }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.minutos_totales }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_minutos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.tl_metidos }}/{{ j.tl_tirados }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.tl_porcentaje }}%</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.faltas_cometidas }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_faltas }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.valoracion }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.prom_valoracion }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ j.mvps || 0 }}</td>
+          </tr>
+
+          <tr class="bg-slate-200 dark:bg-slate-700 font-semibold text-slate-800 dark:text-white">
+            <td class="border px-2 py-1 dark:border-slate-600"></td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">Totales</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.partidos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.puntos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_puntos }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.tiros_2p }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_t2 }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.triples }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_t3 }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.minutos_jugados }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_minutos_jugados }}
+            </td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.tiros_libres }}/{{
+              resumenTotales.tiros_libres_tirados }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.tl_porcentaje }}%</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.faltas_cometidas }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_faltas }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.valoracion }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.prom_valoracion }}</td>
+            <td class="border px-2 py-1 text-center dark:border-slate-600">{{ resumenTotales.mvps }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<app-jugador-modal *ngIf="jugadorSeleccionado()" [jugador]="jugadorSeleccionado()"
+  [partidos]="jugadorSeleccionado()?.partidos" (cerrar)="cerrarModal()" />

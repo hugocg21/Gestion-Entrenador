@@ -1,0 +1,43 @@
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <h1 class="text-2xl font-bold mb-6 text-center">Tus Equipos</h1>
+
+  <div *ngIf="loading" class="text-center text-gray-500 dark:text-gray-400">
+    Cargando equipos...
+  </div>
+
+  <div *ngIf="!loading && teams.length === 0" class="mb-4 text-center text-gray-600 dark:text-gray-300">
+    No tienes equipos aún.
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+    <div *ngFor="let team of teams" class="p-4 rounded-xl shadow transition hover:scale-[1.02] cursor-pointer
+             bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700" (click)="selectTeam(team)">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ team.name }}</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-300">{{ team.category }}</p>
+    </div>
+  </div>
+
+  <!-- Botón -->
+  <div class="mt-8 text-center">
+    <button (click)="toggleForm()"
+      class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-xl transition">
+      {{ showForm ? 'Cancelar' : '➕ Crear nuevo equipo' }}
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <form *ngIf="showForm" (submit)="createTeam()"
+    class="mt-6 space-y-4 max-w-xl mx-auto bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow transition">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Nuevo equipo</h2>
+
+    <input [(ngModel)]="newTeamName" name="teamName" type="text" placeholder="Nombre del equipo" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+             placeholder-gray-400 dark:placeholder-gray-400 border-gray-300 dark:border-gray-600" required />
+
+    <input [(ngModel)]="newTeamCategory" name="teamCategory" type="text" placeholder="Categoría" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+             placeholder-gray-400 dark:placeholder-gray-400 border-gray-300 dark:border-gray-600" />
+
+    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition">
+      Guardar equipo
+    </button>
+  </form>
+</div>

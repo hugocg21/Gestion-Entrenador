@@ -1,0 +1,11 @@
+<div *ngIf="visible"
+  class="fixed bottom-6 right-6 flex items-center gap-3 px-4 py-2 rounded-lg shadow-lg z-50 text-white animate-fade-in-out transition-all duration-300"
+  [ngClass]="{
+    'bg-emerald-600 dark:bg-emerald-500': tipo === 'success',
+    'bg-red-600 dark:bg-red-500': tipo === 'error'
+  }">
+
+  <span *ngIf="tipo === 'success'">✅</span>
+  <span *ngIf="tipo === 'error'">❌</span>
+  <span class="text-sm">{{ mensaje }}</span>
+</div>

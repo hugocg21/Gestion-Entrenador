@@ -1,35 +1,49 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+// src/app/services/auth.service.ts
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import firebase from 'firebase/compat/app'; // Asegúrate de importar esto
+import { BehaviorSubject } from 'rxjs';
+import {
+  Auth,
+  authState,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from '@angular/fire/auth';
+import { GoogleAuthProvider } from 'firebase/auth';
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from '@angular/fire/firestore';
+import { TeamSelectionService } from './team-selection.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private loggedInSource = new BehaviorSubject<boolean>(this.getInitialLoggedInState());
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+  private router = inject(Router);
+
+  private loggedInSource = new BehaviorSubject<boolean>(
+    localStorage.getItem('loggedIn') === 'true'
+  );
   loggedIn$ = this.loggedInSource.asObservable();
 
-  private usernameSource = new BehaviorSubject<string | null>(this.getInitialUsernameState());
+  private usernameSource = new BehaviorSubject<string | null>(
+    localStorage.getItem('username')
+  );
   username$ = this.usernameSource.asObservable();
 
-  private currentUserUid: string | null = null;
+  private currentUserUid: string | null = localStorage.getItem('uid');
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private router: Router,
-    private firestore: AngularFirestore
-  ) {
-    // Escucha el estado de autenticación
-    this.afAuth.authState.subscribe(async (user) => {
+  constructor() {
+    authState(this.auth).subscribe(async (user) => {
       if (user) {
         this.currentUserUid = user.uid;
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('uid', user.uid);
 
-        // Obtener y almacenar el nombre de usuario
         const username = await this.fetchUsernameFromFirestore(user.email);
         if (username) {
           this.usernameSource.next(username);
@@ -43,24 +57,19 @@ export class AuthService {
     });
   }
 
-  // Obtiene el nombre de usuario desde Firestore
-  private async fetchUsernameFromFirestore(email: string | null): Promise<string | null> {
+  private async fetchUsernameFromFirestore(
+    email: string | null
+  ): Promise<string | null> {
     if (!email) return null;
 
-    const userDoc = await this.firestore
-      .collection('users')
-      .ref.where('email', '==', email)
-      .get();
+    const usersRef = collection(this.firestore, 'users');
+    const q = query(usersRef, where('email', '==', email));
+    const snapshot = await getDocs(q);
 
-    if (!userDoc.empty) {
-      return userDoc.docs[0].id; // Nombre de usuario como ID
-    }
-
-    return null;
+    return snapshot.empty ? null : snapshot.docs[0].id;
   }
 
-  // Limpia los datos de autenticación
-  private clearAuthData() {
+  private clearAuthData(): void {
     this.currentUserUid = null;
     this.loggedInSource.next(false);
     this.usernameSource.next(null);
@@ -69,47 +78,39 @@ export class AuthService {
     localStorage.removeItem('username');
   }
 
-  // Obtiene el estado inicial desde localStorage
-  private getInitialLoggedInState(): boolean {
-    return localStorage.getItem('loggedIn') === 'true';
-  }
-
-  // Obtiene el nombre de usuario inicial desde localStorage
-  private getInitialUsernameState(): string | null {
-    return localStorage.getItem('username');
-  }
-
-  // Inicia sesión con email y contraseña
   login(email: string, password: string) {
-    return this.afAuth.signInWithEmailAndPassword(email, password);
+    return signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  // Cierra sesión
-  logout() {
-    this.afAuth.signOut().then(() => {
+  loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(this.auth, provider);
+  }
+
+  private teamSel = inject(TeamSelectionService); // ← inyecta
+
+  logout(): void {
+    signOut(this.auth).then(() => {
       this.clearAuthData();
+      this.teamSel.clearSelection(); // ← limpia selección del equipo
       this.router.navigate(['/login']);
     });
   }
 
-  // Obtiene el nombre de usuario actual
   getUsername(): string | null {
-    return this.usernameSource.value || localStorage.getItem('username');
+    return this.usernameSource.value;
   }
 
-  // Obtiene el UID del usuario actual
   getUid(): string | null {
-    return this.currentUserUid || localStorage.getItem('uid');
+    return this.currentUserUid;
   }
 
-  // Verifica si el usuario está autenticado
   isLoggedIn(): boolean {
     return this.loggedInSource.value;
   }
 
-  // Método explícito para obtener el nombre de usuario desde Firestore
-  async fetchUsername() {
-    const user = await this.afAuth.currentUser;
+  async fetchUsername(): Promise<void> {
+    const user = this.auth.currentUser;
     if (user) {
       const username = await this.fetchUsernameFromFirestore(user.email);
       if (username) {
@@ -118,8 +119,4 @@ export class AuthService {
       }
     }
   }
-
-  loginWithGoogle() {
-  return this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-}
 }

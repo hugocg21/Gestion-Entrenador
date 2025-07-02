@@ -1,8 +1,9 @@
-<div *ngIf="!loggedIn" class="h-screen flex items-center justify-center" [ngClass]="{ 'bg-gray-900 text-white': isDarkMode, 'bg-white text-gray-900': !isDarkMode }">
+<div *ngIf="!loggedIn" class="h-screen flex items-center justify-center"
+  [ngClass]="{ 'bg-gray-900 text-white': isDarkMode, 'bg-white text-gray-900': !isDarkMode }">
   <router-outlet></router-outlet>
 </div>
 
 <div *ngIf="loggedIn" class="h-full">
-  <app-header></app-header>
+  <app-header></app-header> <!-- ✅ siempre visible -->
   <router-outlet></router-outlet>
 </div>

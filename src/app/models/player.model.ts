@@ -1,5 +1,5 @@
 export interface Player {
-  id: number;
+  id: string; // 🔁 Cambiado de number a string
   firstName: string;
   position: string;
   image: string | ArrayBuffer | null;

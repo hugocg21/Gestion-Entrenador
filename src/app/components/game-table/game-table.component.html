@@ -1,0 +1,88 @@
+<div
+  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-sm p-4 sm:p-6 overflow-x-auto">
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">
+      📊 Estadísticas vs {{ rival }}
+    </h2>
+    <button (click)="cerrarTabla()" class="text-sm text-red-600 dark:text-red-400 hover:underline whitespace-nowrap">
+      ✖️ Cerrar
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table id="tablaEstadisticas"
+      class="min-w-[900px] w-full border-collapse text-xs sm:text-sm shadow-sm border border-slate-200 dark:border-slate-600">
+      <thead class="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white">
+        <tr>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">#</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-left">Nombre</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">Min</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">PTS</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">T2</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">%</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">T3</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">%</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">TL</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">%</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">RD</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">RO</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">RT</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">AS</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">REC</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">PÉR</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">TC</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">TR</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">FC</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">FR</th>
+          <th class="px-2 py-1 border dark:border-slate-600 text-center">VAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let jugador of jugadores"
+          class="even:bg-slate-50 dark:even:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition">
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.numero }}</td>
+          <td class="border px-2 py-1 dark:border-slate-600 text-slate-800 dark:text-white">{{ jugador.nombre }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.minutos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.puntos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.tiros_2p }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.porcentaje_2p }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.triples }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.porcentaje_3p }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.tiros_libres }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.porcentaje_tl }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.rebotes_defensivos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.rebotes_ofensivos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.rebotes_totales }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.asistencias }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.recuperaciones }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.perdidas }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.tapones_cometidos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.tapones_recibidos }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.faltas_cometidas }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.faltas_recibidas }}</td>
+          <td class="border px-2 py-1 text-center dark:border-slate-600 text-slate-800 dark:text-white">{{
+            jugador.valoracion }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

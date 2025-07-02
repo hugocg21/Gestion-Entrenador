@@ -2,20 +2,41 @@ import { Component, OnInit } from '@angular/core';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
 import { ThemeService } from '../../services/theme.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-assistance',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './assistance.component.html',
-  styleUrls: ['./assistance.component.css']
+  styleUrls: ['./assistance.component.css'],
 })
 export class AssistanceComponent implements OnInit {
   players: Player[] = []; // Lista de jugadores con objetos Player
-  currentMonth: number = new Date().getMonth(); // Variable numérica que guarda el número del mes actual
-  currentYear: number = new Date().getFullYear(); // Variable numérica que guarda el número del año actual
-  months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  currentMonth: number = 5; // Junio (los meses van de 0 a 11)
+  currentYear: number = 2025;
+
+  months = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
   trainingDays: { date: Date }[] = []; // Lista que almacena los días de entrenamiento
 
-  constructor(private playerService: PlayerService, private themeService: ThemeService) {}
+  constructor(
+    private playerService: PlayerService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     // Obtener jugadores de forma asincrónica
@@ -52,7 +73,9 @@ export class AssistanceComponent implements OnInit {
 
   // Ordenar jugadores por posición
   get playersSorted() {
-    return this.players.sort((a, b) => this.comparePositions(a.position, b.position));
+    return this.players.sort((a, b) =>
+      this.comparePositions(a.position, b.position)
+    );
   }
 
   // Comparar posiciones para ordenar a los jugadores
@@ -61,98 +84,107 @@ export class AssistanceComponent implements OnInit {
     return order.indexOf(posA) - order.indexOf(posB);
   }
 
-  // Generar los días de entrenamiento del mes
   generateTrainingDays() {
     this.trainingDays = [];
-    let currentMonth = this.currentMonth;
-    let currentYear = this.currentYear;
-    let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const currentMonth = this.currentMonth;
+    const currentYear = this.currentYear;
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    const cutoffDate = new Date(2025, 5, 13); // 13 de junio de 2025
 
     const excludedDates = [
-      new Date(2024, 10, 1), // 1 de noviembre
-      new Date(2024, 10, 8), // 8 de noviembre
-      new Date(2024, 10, 15), // 15 de noviembre
-      new Date(2024, 10, 22), // 22 de noviembre
-      new Date(2024, 11, 6), // 6 de diciembre
-      new Date(2024, 11, 13), // 13 de diciembre
-      new Date(2024, 11, 24), // 24 de diciembre
-      new Date(2024, 11, 26), // 26 de diciembre
-      new Date(2024, 11, 27), // 27 de diciembre
-      new Date(2024, 11, 31), // 31 de diciembre
-      new Date(2025, 0, 2), // 2 de enero
-      new Date(2025, 0, 3), // 3 de enero
-      new Date(2025, 0, 17), // 17 de enero
-      new Date(2025, 1, 14), // 14 de febrero
-      new Date(2025, 1, 21), // 21 de febrero
-      new Date(2025, 1, 28), // 28 de febrero
-      new Date(2025, 2, 4), // 4 de marzo
-      new Date(2025, 2, 28), // 28 de marzo
-      new Date(2025, 3, 1), // 1 de abril
-      new Date(2025, 3, 4), // 4 de abril
-      new Date(2025, 3, 11), // 11 de abril
-      new Date(2025, 3, 15), // 15 de abril
-      new Date(2025, 3, 17), // 17 de abril
-      new Date(2025, 3, 18), // 18 de abril
-      new Date(2025, 3, 25), // 25 de abril
-      new Date(2025, 4, 1), // 1 de mayo
-      new Date(2025, 4, 9), // 9 de mayo
-      new Date(2025, 4, 16), // 16 de mayo
-      new Date(2025, 4, 23), // 23 de mayo
-      new Date(2025, 5, 3), // 3 de junio
+      new Date(2024, 10, 1),
+      new Date(2024, 10, 8),
+      new Date(2024, 10, 15),
+      new Date(2024, 10, 22),
+      new Date(2024, 11, 6),
+      new Date(2024, 11, 13),
+      new Date(2024, 11, 24),
+      new Date(2024, 11, 26),
+      new Date(2024, 11, 27),
+      new Date(2024, 11, 31),
+      new Date(2025, 0, 2),
+      new Date(2025, 0, 3),
+      new Date(2025, 0, 17),
+      new Date(2025, 1, 14),
+      new Date(2025, 1, 21),
+      new Date(2025, 1, 28),
+      new Date(2025, 2, 4),
+      new Date(2025, 2, 28),
+      new Date(2025, 3, 1),
+      new Date(2025, 3, 4),
+      new Date(2025, 3, 11),
+      new Date(2025, 3, 15),
+      new Date(2025, 3, 17),
+      new Date(2025, 3, 18),
+      new Date(2025, 3, 25),
+      new Date(2025, 4, 1),
+      new Date(2025, 4, 9),
+      new Date(2025, 4, 16),
+      new Date(2025, 4, 23),
+      new Date(2025, 5, 3),
     ];
 
-    if (currentMonth === 8 && currentYear === 2024) {
-      for (let day = 5; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const dayOfWeek = date.getDay();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(currentYear, currentMonth, day);
+      const dayOfWeek = date.getDay();
 
-        if ((dayOfWeek === 2 || dayOfWeek === 4) && !excludedDates.some(d => d.getTime() === date.getTime())) {
-          this.trainingDays.push({ date: new Date(date) });
-        }
-      }
-    } else if (currentYear > 2024 || (currentYear === 2024 && currentMonth >= 9)) {
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const dayOfWeek = date.getDay();
+      // Detener generación si se pasa del 13 de junio de 2025
+      if (date > cutoffDate) continue;
 
-        if ((dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5) && !excludedDates.some(d => d.getTime() === date.getTime())) {
-          this.trainingDays.push({ date: new Date(date) });
-        }
+      const isExcluded = excludedDates.some(
+        (d) => d.getTime() === date.getTime()
+      );
+
+      const isTrainingDay =
+        (currentYear === 2024 &&
+          currentMonth === 8 &&
+          (dayOfWeek === 2 || dayOfWeek === 4)) || // septiembre
+        ((currentYear > 2024 || (currentYear === 2024 && currentMonth >= 9)) &&
+          [2, 4, 5].includes(dayOfWeek)); // octubre 2024 en adelante
+
+      if (isTrainingDay && !isExcluded) {
+        this.trainingDays.push({ date: new Date(date) });
       }
     }
 
-    // Agregar el 08/01/2025 como un día de entrenamiento específico
-    const specificDate = new Date(2025, 0, 8); // 08 de enero de 2025
+    // Día de entrenamiento específico: 8 de enero de 2025
+    const specificDate = new Date(2025, 0, 8);
     if (
+      specificDate <= cutoffDate &&
       specificDate.getFullYear() === currentYear &&
       specificDate.getMonth() === currentMonth
     ) {
       this.trainingDays.push({ date: specificDate });
     }
 
-    // Ordenar los días de entrenamiento por fecha
     this.trainingDays.sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
   // Obtener la cuenta de jugadores presentes en un entrenamiento
   getAttendanceCount(date: string): number {
-    return this.players.filter(player => player.attendance[date]).length;
+    return this.players.filter((player) => player.attendance[date]).length;
   }
 
   // Alternar la asistencia de un jugador
-  toggleAttendance(playerId: number, date: Date, event: Event) {
+  toggleAttendance(playerId: string, date: Date, event: Event) {
     const target = event.target as HTMLInputElement;
     const attended = target.checked;
     const formattedDate = this.formatDate(date);
 
     // Convertir playerId a string antes de usarlo en el servicio
-    this.playerService.updatePlayerAttendance(playerId.toString(), formattedDate, attended).then(() => {
-      console.log(`Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`);
-    }).catch(error => {
-      console.error('Error al actualizar la asistencia:', error);
-      // Si hay un error, revertir el cambio visual
-      target.checked = !attended;
-    });
+    this.playerService
+      .updatePlayerAttendance(playerId.toString(), formattedDate, attended)
+      .then(() => {
+        console.log(
+          `Asistencia actualizada: Jugador ${playerId}, Fecha ${formattedDate}, Asistió: ${attended}`
+        );
+      })
+      .catch((error) => {
+        console.error('Error al actualizar la asistencia:', error);
+        // Si hay un error, revertir el cambio visual
+        target.checked = !attended;
+      });
   }
 
   // Formatear fecha en formato 'día/mes/año'
@@ -180,8 +212,12 @@ export class AssistanceComponent implements OnInit {
     this.generateTrainingDays();
   }
 
-  // Cambiar al siguiente mes
   nextMonth() {
+    // Si ya estamos en junio de 2025, no permitir avanzar más
+    if (this.currentYear === 2025 && this.currentMonth === 5) {
+      return;
+    }
+
     if (this.currentMonth < 11) {
       this.currentMonth++;
     } else {
@@ -189,10 +225,8 @@ export class AssistanceComponent implements OnInit {
       this.currentYear++;
     }
 
-    // Generar los días de entrenamientos del mes seleccionado
     this.generateTrainingDays();
   }
-
 
   isDarkMode: boolean = false;
 

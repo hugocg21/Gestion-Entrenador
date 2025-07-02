@@ -1,21 +1,19 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
+import { Auth, authState } from '@angular/fire/auth';
+import { firstValueFrom } from 'rxjs';
 
-export const noAuthGuard: CanActivateFn = () => {
-  const auth = inject(AngularFireAuth);
+export const noAuthGuard: CanActivateFn = async () => {
+  const auth = inject(Auth);
   const router = inject(Router);
 
-  return new Promise<boolean>((resolve) => {
-    const sub = auth.authState.subscribe((user) => {
-      sub.unsubscribe();
-      if (user) {
-        router.navigate(['/select-league']);
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
+  const user = await firstValueFrom(authState(auth));
+
+  if (user) {
+    router.navigate(['/']);
+    return false;
+  } else {
+    return true;
+  }
 };

@@ -1,0 +1,35 @@
+<div
+  class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-4 sm:p-6 md:p-8 mx-auto space-y-10 min-h-screen transition-colors duration-300">
+
+  <!-- 🔹 Subida -->
+  <div class="border-b border-slate-200 dark:border-slate-700 pb-6 animate-fade-in">
+    <app-upload-card [tipoArchivo]="tipoArchivo" (archivoProcesado)="procesarArchivo($event)"
+      (guardar)="guardarPartido()">
+    </app-upload-card>
+  </div>
+
+  <!-- 🔹 Tabla -->
+  <div *ngIf="tipoArchivo === 'estadisticas'"
+    class="border-b border-slate-200 dark:border-slate-700 pb-6 animate-fade-in">
+    <app-game-table [rival]="rival" [jugadores]="movimientos" (cerrar)="cerrarEstadisticas()"></app-game-table>
+  </div>
+
+  <!-- 🔹 Partidos guardados -->
+  <div class="border-b border-slate-200 dark:border-slate-700 pb-6 animate-fade-in">
+    <app-game-list [partidos]="partidosFiltrados" (ver)="verEstadisticas($event)" (eliminar)="eliminarPartido($event)"
+      (actualizar)="actualizarPartido($event)"></app-game-list>
+  </div>
+
+  <!-- 🔹 Estadísticas acumuladas -->
+  <!-- <div class="animate-fade-in">
+    <app-stats-summary [resumenJugadores]="resumenJugadores" [totales]="totales" [ordenActual]="ordenActual"
+      [ordenAscendente]="ordenAscendente" (ordenar)="ordenarPor($event)" (abrirDetalle)="abrirModalJugador($event)">
+    </app-stats-summary>
+  </div> -->
+
+  <app-toast [visible]="toastVisible" [mensaje]="toastMensaje" [tipo]="toastTipo"></app-toast>
+
+  <!-- <app-jugador-modal *ngIf="jugadorSeleccionado" [jugador]="jugadorSeleccionado" [partidos]="partidosJugador"
+    (cerrar)="cerrarModalJugador()">
+  </app-jugador-modal> -->
+</div>

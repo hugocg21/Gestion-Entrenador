@@ -1,0 +1,38 @@
+<div
+  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-md shadow-sm p-4 md:p-6 space-y-4 w-full">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">📂 Subir archivo de estadísticas</h2>
+    <button (click)="toggleContenido()"
+      class="text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white transition-transform duration-200"
+      [ngStyle]="{ transform: mostrarContenido ? 'rotate(0deg)' : 'rotate(-90deg)' }">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
+
+  <div *ngIf="mostrarContenido" class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <input type="file" (change)="onFileChange($event)"
+      class="w-full sm:w-auto flex-1 px-3 py-2 border border-slate-300 dark:border-slate-500 rounded-md shadow-sm text-sm text-slate-700 dark:text-white bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+    <button (click)="uploadFile()" [disabled]="cargando"
+      class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium transition disabled:opacity-50 flex items-center justify-center gap-2">
+      <ng-container *ngIf="!cargando">⬆️ Subir y procesar</ng-container>
+      <ng-container *ngIf="cargando">
+        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3 3 3H4z" />
+        </svg>
+        Procesando...
+      </ng-container>
+    </button>
+
+    <!-- ✅ Botón de guardar SOLO si el tipo es estadisticas -->
+    <button *ngIf="tipoArchivo === 'estadisticas'" (click)="guardarPartido()"
+      class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-md text-sm font-medium transition">
+      💾 Guardar partido
+    </button>
+  </div>
+
+</div>

@@ -1,48 +1,63 @@
-import { Component } from '@angular/core';
+// src/app/app.component.ts
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+
 import { AuthService } from './services/auth.service';
-import { Router } from '@angular/router';
 import { ThemeService } from './services/theme.service';
+import { HeaderComponent } from './components/header/header.component';
+
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Gestion-Entrenador';
 
-  loggedIn: boolean = false;
+  loggedIn = false;
+  isDarkMode = false;
+  hasTeamSelected = false;
 
-  constructor(private authService: AuthService, private router: Router, private themeService: ThemeService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private themeService: ThemeService
+  ) {}
 
-  ngOnInit() {
-    this.authService.loggedIn$.subscribe((status) => {
+  ngOnInit(): void {
+    this.authService.loggedIn$.subscribe((status: boolean) => {
       this.loggedIn = status;
 
-      // Solo redirigir al login si no está logueado y ya no está en la página de login
-      if (!this.loggedIn && this.router.url !== '/login') {
+      // 🟢 Verifica cada vez el equipo seleccionado
+      this.hasTeamSelected = !!localStorage.getItem('selectedTeamId');
+
+      if (!status && this.router.url !== '/login') {
         this.router.navigate(['/login']);
       }
     });
 
-    this.themeService.isDarkMode$.subscribe((isDarkMode) => {
-      this.isDarkMode = isDarkMode;
+    // Escucha también cambios del localStorage por seguridad
+    window.addEventListener('storage', () => {
+      this.hasTeamSelected = !!localStorage.getItem('selectedTeamId');
+    });
+
+    this.themeService.isDarkMode$.subscribe((isDark: boolean) => {
+      this.isDarkMode = isDark;
+      this.applyTheme();
     });
   }
 
-  isDarkMode: boolean = false;
-
-  toggleDarkMode() {
+  toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
-    localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode)); // Guardar preferencia
+    localStorage.setItem('darkMode', JSON.stringify(this.isDarkMode));
     this.applyTheme();
   }
 
-  applyTheme() {
+  private applyTheme(): void {
     const html = document.documentElement;
-    if (this.isDarkMode) {
-      html.classList.add('dark'); // Agregar clase `dark`
-    } else {
-      html.classList.remove('dark'); // Quitar clase `dark`
-    }
+    html.classList.toggle('dark', this.isDarkMode);
   }
 }
