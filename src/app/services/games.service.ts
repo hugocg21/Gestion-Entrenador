@@ -19,7 +19,6 @@ import { Observable } from 'rxjs';
 export class GamesService {
   /* --- Backend (Render) solo para procesar Excel ------------------------- */
   private readonly API_URL = 'https://n1tracker-backend.onrender.com';
-  BASE_URL = 'https://n1tracker-backend.onrender.com';
 
   /* --- Firestore -------------------------------------------------------- */
   private firestore = inject(Firestore);

@@ -64,8 +64,14 @@ export class TeamDashboardComponent {
   private teamSel = inject(TeamSelectionService); // ← inyecta
 
   selectTeam(team: any) {
+    const username = this.authService.getUsername();
+    if (!username) {
+      console.error('❌ No hay username disponible');
+      return;
+    }
+
     console.log('[TRACE] Equipo seleccionado:', team);
-    this.teamSel.setSelectedTeam(team.id); // ← notifica
-    this.router.navigate(['/app']); // navega
+    this.teamSel.setSelectedTeam(team.id, username, team);
+    this.router.navigate(['/app']);
   }
 }

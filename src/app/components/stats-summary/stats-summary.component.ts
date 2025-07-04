@@ -7,6 +7,7 @@ import { GamesService } from '../../services/games.service';
 import { JugadorModalComponent } from '../../ui/jugador-modal/jugador-modal.component';
 
 import { Firestore } from '@angular/fire/firestore'; // ✅ import correcto
+import { TeamSelectionService } from '../../services/team-selection.service';
 
 @Component({
   selector: 'app-stats-summary',
@@ -28,11 +29,14 @@ export class StatsSummaryComponent implements OnInit {
   ordenActual = signal('numero');
   ordenAscendente = signal(true);
 
-  constructor(private partidosService: GamesService) {
+  constructor(private partidosService: GamesService, private teamService: TeamSelectionService) {
     console.log('[StatsSummaryComponent] Firestore:', this.firestore);
   }
 
   async ngOnInit() {
+    const teamData = this.teamService.getSelectedTeamData();
+    console.log('🏀 Nombre del equipo:', teamData?.name);
+
     try {
       const jugadores = await this.partidosService.getEstadisticasAcumuladas();
 
@@ -202,7 +206,7 @@ export class StatsSummaryComponent implements OnInit {
             return {
               ...stats,
               fecha: p.fecha,
-              rival:  p.rival || p.resultado?.rival,
+              rival: p.rival || p.resultado?.rival,
               mvp: p.mvp,
             };
           })
